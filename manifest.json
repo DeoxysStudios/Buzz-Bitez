@@ -1,6 +1,6 @@
 {
     "name": "Buzz Bitez",
-    "start_url": "/home.html",
+    "start_url": "/Buzz-Bitez/home.html",
     "display": "standalone",
-    "scope": "/"
+    "scope": "/Buzz-Bitez"
 }
