@@ -1,0 +1,6 @@
+{
+    "name": "Buzz Bitez",
+    "start_url": "/home.html",
+    "display": "standalone",
+    "scope": "/"
+}
