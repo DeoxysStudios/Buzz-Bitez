@@ -16,12 +16,12 @@
 
     /* Nav button colors. White text on this blue is a high-contrast pairing
        (roughly 8:1), well past the WCAG AA minimum of 4.5:1 for normal text. */
-    --color-button-bg: #1d4ed8;
+    --color-button-bg: #b81111;
     --color-button-text: #ffffff;
 
     /* Darker blue used when a button is hovered or keyboard-focused. Going
        darker (not lighter) keeps the white label readable. */
-    --color-button-bg-active: #1e3a8a;
+    --color-button-bg-active: #8f0e0e;
 
     /* Color of the ring drawn around a keyboard-focused button. */
     --color-focus-ring: #1a1a1a;
@@ -33,17 +33,32 @@
 
 /* Page basics. Browsers add their own default margin to <body>; we replace it
    with padding we control so content doesn't touch the window edge. */
+html, body{
+   /* added for footer formatting */
+   height: 100%;
+   margin: 0;
+}
 body {
     font-family: var(--font-body);
     background-color: var(--color-bg);
     color: var(--color-text);
     margin: 0;
-    padding: 2rem 1rem;
+    padding: 0;
     line-height: 1.5;
+
+    /* added for footer formatting */
+    display: flex;   
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 h1 {
     text-align: center;
+}
+
+main {
+   /* added for footer formatting */
+   flex: 1;
 }
 
 /* The nav list. Browsers render a <ul> as stacked, bulleted rows by default.
@@ -91,4 +106,35 @@ h1 {
     background-color: var(--color-button-bg-active);
     outline: 3px solid var(--color-focus-ring);
     outline-offset: 2px;
+}
+
+.site-footer {
+  background-color: #1a1a1a;
+  color: #ccc;
+  text-align: center;
+  padding: 24px 16px;
+  margin-top: 40px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-links a {
+  color: #ccc;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.footer-links a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.footer-copy {
+  font-size: 12px;
+  color: #888;
 }
