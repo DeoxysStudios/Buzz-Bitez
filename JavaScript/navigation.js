@@ -1,3 +1,4 @@
+// File written by Gemini https://share.gemini.google/898FkB6DJSOU
 document.addEventListener('click', function(event) {
     let element = event.target;
     while (element && element.tagName !== 'A')
