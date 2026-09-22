@@ -1,0 +1,94 @@
+/* Buzz Bitez — shared stylesheet.
+
+   PLACEHOLDER STYLE: this is a simple stand-in look so the pages are usable
+   and readable. It is pending a team decision on the real design, so expect
+   all of it to change. Every color and the font live in the :root block
+   below — change those few lines to restyle the whole site. */
+
+/* Design tokens (CSS variables). ":root" means "the whole document", so
+   anything defined here can be used by any rule further down via var(--name).
+   Keeping them in one place means the team edits colors here, not in 6
+   scattered rules. */
+:root {
+    /* Page colors. Near-black text on a near-white background reads clearly. */
+    --color-bg: #f7f7f8;
+    --color-text: #1a1a1a;
+
+    /* Nav button colors. White text on this blue is a high-contrast pairing
+       (roughly 8:1), well past the WCAG AA minimum of 4.5:1 for normal text. */
+    --color-button-bg: #1d4ed8;
+    --color-button-text: #ffffff;
+
+    /* Darker blue used when a button is hovered or keyboard-focused. Going
+       darker (not lighter) keeps the white label readable. */
+    --color-button-bg-active: #1e3a8a;
+
+    /* Color of the ring drawn around a keyboard-focused button. */
+    --color-focus-ring: #1a1a1a;
+
+    /* One font stack for the whole site. The browser walks this list left to
+       right and uses the first font the machine actually has installed. */
+    --font-body: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+}
+
+/* Page basics. Browsers add their own default margin to <body>; we replace it
+   with padding we control so content doesn't touch the window edge. */
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    margin: 0;
+    padding: 2rem 1rem;
+    line-height: 1.5;
+}
+
+h1 {
+    text-align: center;
+}
+
+/* The nav list. Browsers render a <ul> as stacked, bulleted rows by default.
+   "list-style: none" removes the bullets and "padding: 0" removes the indent
+   the browser reserves for them. "display: flex" then lays the <li> items out
+   in a row instead of a stack, "gap" puts even space between them, and
+   "flex-wrap: wrap" lets them drop onto a second line on a narrow phone screen
+   rather than overflowing off the side. Now rather than overflowing off the side. 
+   "justify-content: center" centers each row, including a partial second row. */
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+/* The links themselves, styled to look like buttons — but they are still
+   plain <a> tags, so they navigate with no JavaScript involved.
+   "display: inline-block" is the key line: a plain inline <a> ignores vertical
+   padding, so without it the colored box would be a thin strip around the text
+   instead of a proper button-sized rectangle. */
+.nav-list a {
+    display: inline-block;
+    padding: 0.6rem 1.1rem;
+    background-color: var(--color-button-bg);
+    color: var(--color-button-text);
+    text-decoration: none;   /* removes the default underline on links */
+    border-radius: 6px;      /* rounds the corners */
+    font-weight: 600;
+}
+
+/* Mouse hover: darken the button so it visibly reacts to the pointer. */
+.nav-list a:hover {
+    background-color: var(--color-button-bg-active);
+}
+
+/* Keyboard focus: the same darkening as hover, plus a visible ring, so someone
+   tabbing through the page can tell which button they are on. ":focus-visible"
+   (rather than ":focus") means the ring appears for keyboard users but not as
+   a leftover outline after a mouse click. */
+.nav-list a:focus-visible {
+    background-color: var(--color-button-bg-active);
+    outline: 3px solid var(--color-focus-ring);
+    outline-offset: 2px;
+}
