@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,17 +7,55 @@
     <title>Buzz Bitez</title>
     <script src="JavaScript/navigation.js"></script>
     <link rel="manifest" href="manifest.json"/>
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-    <h1>Alerts</h1>
-    <ul>
-        <li><a href="signup.html">Sign up/Log in</a></li>
-        <li><a href="alerts.html">Alerts</a></li>
-        <li><a href="broadcast.html">Broadcast</a></li>
-        <li><a href="settings.html">Settings</a></li>
-        <li><a href="home.html">Home</a></li>
-    </ul>
+    <header class="BB-header">
+        <div class="header-container">
+
+            <!-- Logo -->
+            <a href="home.html" class="logo">
+                <img src="assets/logoNoText.PNG" alt="Buzz Bitez logo" class="logo-icon">
+                <span class="logo-text">
+                    Buzz <span>Bitez</span>
+                </span>
+            </a>
+
+            <!-- Navigation -->
+            <nav class="main-nav">
+                <a href="home.html" class="nav-link">Discover</a>
+                <a href="alerts.html" class="nav-link active">Alerts</a>
+                <a href="broadcast.html" class="nav-link">Broadcast</a>
+                <a href="settings.html" class="nav-link">Settings</a>
+            </nav>
+
+            <!-- Right Side -->
+            <div class="header-actions">
+              <a href="alerts.html" class="notification-button" aria-label="Notifications">
+                <svg
+                    class="bell-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+              </a>
+                <a href="signup.html" class="profile-button">
+                    AM
+                </a>
+            </div>
+        </div>
+    </header>
 </body>
+<main>
+</main>
 <footer class="BB-footer">
   <div class="footer-links">
     <a href="home.html">About</a>
