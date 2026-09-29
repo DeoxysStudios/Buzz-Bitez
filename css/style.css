@@ -1,0 +1,346 @@
+/* -------------------------
+   General
+------------------------- */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #ffffff;
+    color: #1f2933;
+}
+
+
+/* -------------------------
+   Header
+------------------------- */
+
+.BB-header {
+    width: 100%;
+    height: 70px;
+
+    background-color: #ffffff;
+
+    border-bottom: 2px solid #e7f5f7;
+
+    display: flex;
+    align-items: center;
+}
+
+.header-container {
+    width: 100%;
+    max-width: 1320px;
+    height: 100%;
+
+    margin: 0 auto;
+    padding: 0 30px;
+
+    display: flex;
+    align-items: center;
+}
+
+
+/* -------------------------
+   Logo
+------------------------- */
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    text-decoration: none;
+    color: #171717;
+
+    margin-right: auto;
+}
+
+.logo-icon {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+}
+
+
+.logo-text {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 33px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.logo-text span {
+    color: #e00000;
+}
+
+
+/* -------------------------
+   Navigation
+------------------------- */
+
+.main-nav {
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 55px;
+}
+
+.nav-link {
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+
+    position: relative;
+
+    color: #555c64;
+
+    text-decoration: none;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #df0000;
+}
+
+
+/* Active page text */
+
+.nav-link.active {
+    color: #df0000;
+}
+
+
+/* Red line under active page */
+
+.nav-link.active::after {
+    content: "";
+
+    position: absolute;
+
+    height: 4px;
+    width: 100%;
+
+    background-color: #e00000;
+
+    bottom: 0;
+    left: 0;
+
+    border-radius: 4px 4px 0 0;
+}
+
+/* bell icon */
+.bell-icon {
+    width: 25px;
+    height: 25px;
+    color: #555;
+}
+
+/* -------------------------
+   Right Side
+------------------------- */
+
+.header-actions {
+    margin-left: auto;
+
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+}
+
+
+/* Notification Button */
+
+.notification-button {
+    width: 50px;
+    height: 50px;
+
+    border: 1px solid #dde5e7;
+    border-radius: 50%;
+
+    color: #111;
+
+    text-decoration: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.notification-button:hover {
+    background-color: #f5f5f5;
+    transform: translateY(-1px);
+}
+
+
+
+
+/* Small red notification dot */
+
+.notification-dot {
+    position: absolute;
+
+    width: 8px;
+    height: 8px;
+
+    background-color: #e00000;
+
+    border-radius: 50%;
+
+    right: 13px;
+    top: 12px;
+}
+
+
+/* -------------------------
+   Profile
+------------------------- */
+
+.profile-button {
+    width: 50px;
+    height: 50px;
+
+    border-radius: 50%;
+
+    background-color: #df0000;
+    color: white;
+
+    text-decoration: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.profile-button:hover {
+    background-color: #bd0000;
+    transform: translateY(-1px);
+}
+
+
+/* -------------------------
+   Page Content
+------------------------- */
+
+main {
+    min-height: 600px;
+}
+
+
+/* -------------------------
+   Footer
+------------------------- */
+
+.BB-footer {
+    background-color: #f7f7f7;
+
+    padding: 30px;
+
+    text-align: center;
+
+    border-top: 1px solid #ddd;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    gap: 25px;
+
+    margin-bottom: 15px;
+}
+
+.footer-links a {
+    color: #555;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    color: #df0000;
+}
+
+.footer-copy {
+    color: #777;
+    font-size: 14px;
+}
+
+
+/* -------------------------
+   Responsive Design
+------------------------- */
+
+@media (max-width: 900px) {
+
+    .main-nav {
+        gap: 25px;
+    }
+
+    .nav-link {
+        font-size: 16px;
+    }
+
+    .logo-text {
+        font-size: 25px;
+    }
+}
+
+
+@media (max-width: 700px) {
+
+    .BB-header {
+        height: auto;
+    }
+
+    .header-container {
+        flex-wrap: wrap;
+
+        padding: 15px 20px;
+        gap: 15px;
+    }
+
+    .main-nav {
+        order: 3;
+
+        width: 100%;
+        height: 50px;
+
+        justify-content: space-around;
+
+        gap: 0;
+    }
+
+    .nav-link {
+        height: 50px;
+    }
+
+    .header-actions {
+        margin-left: auto;
+    }
+}
