@@ -1,0 +1,33 @@
+@url = http://127.0.0.1:8000
+
+### GET Request (users)
+GET {{url}}/user
+
+### POST Request (users)
+POST {{url}}/user
+Content-Type: application/json
+
+{
+    "username": "test_user",
+    "password": "password123",
+    "email": "john_doe@rpi.edu",
+    "banneduntil": ""
+}
+
+### GET Request (event)
+GET {{url}}/event
+
+### POST Request (events)
+POST {{url}}/event
+Content-Type: application/json
+
+{
+    "id": "0bdda61a-edd9-49de-a4a4-96aaa5b31f09",
+    "name": "APO",
+    "reporter": "Berrett",
+    "location": "Student Union",
+    "times": [ ["2026-09-29 13:00", "2026-09-29 15:00"], ["2026-09-29 16:00", "2026-09-29 17:30"] ],
+    "description": "I dunno anything about this event, but pretend that I do and put the info here.",
+    "tags": ["vegetarian", "pizza", "ice cream"],
+    "likes": ["test_user", "puckman"]
+}

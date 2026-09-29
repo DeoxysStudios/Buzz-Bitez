@@ -28,15 +28,15 @@ def get_users():
     return users
 
 @app.post("/user")
-def post_user(user: User):
+def post_user(user: Event):
     users.append(user.model_dump())
     return user
 
 @app.get("/event")
-def get_users():
-    return users
+def get_events():
+    return events
 
 @app.post("/event")
-def post_user(user: User):
-    users.append(user.model_dump())
-    return user
+def post_event(event: Event):
+    events.append(event.model_dump())
+    return event
