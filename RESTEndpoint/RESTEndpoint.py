@@ -24,8 +24,8 @@ users: list[User] = []
 events: list[Event] = []
 
 @app.get("/user")
-def get_users(username: str = None):
-    if (username is None):
+def get_users(username: str | None = None):
+    if username is None:
         return users
     for user in users:
         if user.username == username:
@@ -42,10 +42,18 @@ def post_user(user: User):
     return user
 
 @app.get("/event")
-def get_events():
-    return events
+def get_events(id: str | None = None):
+    if id is None:
+        return events
+    for event in events:
+        if event.id == id:
+            return event
+    raise HTTPException(status_code = 404, detail = f"No event with ID \"{id}\" found.")
 
 @app.post("/event")
 def post_event(event: Event):
+    for existing_event in events:
+        if existing_event.id == event.id:
+            raise HTTPException(status_code = 409, detail = f"Event with ID \"{existing_event.id}\" already exists.")
     events.append(event)
     return event

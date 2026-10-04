@@ -21,7 +21,7 @@ Content-Type: application/json
 GET {{url}}/event
 
 ### GET Request (event)
-GET {{url}}/event
+GET {{url}}/event?id=0bdda61a-edd9-49de-a4a4-96aaa5b31f09
 
 ### POST Request (events)
 POST {{url}}/event
