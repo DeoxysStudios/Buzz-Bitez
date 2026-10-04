@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 class User(BaseModel):
@@ -20,16 +20,22 @@ class Event(BaseModel):
 
 app = FastAPI()
 
-users = []
-events = []
+users: list[User] = []
+events: list[Event] = []
 
 @app.get("/user")
-def get_users():
-    return users
+def get_users(username: str = None):
+    if (username is None):
+        return users
+    for user in users:
+        if user.username == username:
+            return user
+    raise HTTPException(status_code=404, detail=f"No user with username {username} found")
+    
 
 @app.post("/user")
-def post_user(user: Event):
-    users.append(user.model_dump())
+def post_user(user: User):
+    users.append(user)
     return user
 
 @app.get("/event")
@@ -38,5 +44,5 @@ def get_events():
 
 @app.post("/event")
 def post_event(event: Event):
-    events.append(event.model_dump())
+    events.append(event)
     return event

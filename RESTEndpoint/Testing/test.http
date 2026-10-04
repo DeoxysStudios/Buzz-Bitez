@@ -3,6 +3,9 @@
 ### GET Request (users)
 GET {{url}}/user
 
+### GET Request (user)
+GET {{url}}/user?username=test_user
+
 ### POST Request (users)
 POST {{url}}/user
 Content-Type: application/json
@@ -13,6 +16,9 @@ Content-Type: application/json
     "email": "john_doe@rpi.edu",
     "banneduntil": ""
 }
+
+### GET Request (events)
+GET {{url}}/event
 
 ### GET Request (event)
 GET {{url}}/event
