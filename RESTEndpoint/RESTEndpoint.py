@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 class User(BaseModel):
-    username: str
+    username: str # Key
     email: str
     password: str
     banneduntil: str
@@ -17,7 +17,7 @@ class User(BaseModel):
         return hash(self.username)
 
 class Event(BaseModel):
-    id: str
+    event_id: str # Key
     name: str
     reporter: str
     location: str
@@ -29,11 +29,11 @@ class Event(BaseModel):
     def __eq__(self, other):
         if not isinstance(other, Event):
             return False
-        # No 2 Events can have the same id
-        return self.id == other.id
+        # No 2 Events can have the same event_id
+        return self.event_id == other.event_id
 
     def __hash__(self):
-        return hash(self.id)
+        return hash(self.event_id)
 
 
 app = FastAPI()
@@ -67,25 +67,25 @@ def delete_user(username: str):
     raise HTTPException(status_code = 404, detail = f"No user with username {username} found.")
 
 @app.get("/event")
-def get_events(id: str | None = None):
-    if id is None:
+def get_events(event_id: str | None = None):
+    if event_id is None:
         return events
     for event in events:
-        if event.id == id:
+        if event.event_id == event_id:
             return event
-    raise HTTPException(status_code = 404, detail = f"No event with ID {id} found.")
+    raise HTTPException(status_code = 404, detail = f"No event with event_id {event_id} found.")
 
 @app.post("/event")
 def post_event(event: Event):
     if event in events:
-        raise HTTPException(status_code = 409, detail = f"Event with ID {event.id} already exists.")
+        raise HTTPException(status_code = 409, detail = f"Event with event_id {event.event_id} already exists.")
     events.append(event)
     return event
 
 @app.delete("/event")
-def delete_event(id: str):
+def delete_event(event_id: str):
     for event in events:
-        if event.id == id:
+        if event.event_id == event_id:
             events.remove(event)
             return event
-    raise HTTPException(status_code = 404, detail = f"No event with ID {id} found.")
+    raise HTTPException(status_code = 404, detail = f"No event with event_id {event_id} found.")
