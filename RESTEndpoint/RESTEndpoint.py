@@ -16,7 +16,7 @@ class Event(BaseModel):
     description: str
     tags: list[str]
     likes: list[str]
-    
+
 
 app = FastAPI()
 
@@ -30,11 +30,14 @@ def get_users(username: str = None):
     for user in users:
         if user.username == username:
             return user
-    raise HTTPException(status_code=404, detail=f"No user with username {username} found")
-    
+    raise HTTPException(status_code = 404, detail = f"No user with username \"{username}\" found.")
+
 
 @app.post("/user")
 def post_user(user: User):
+    for existing_user in users:
+        if existing_user.username == user.username:
+            raise HTTPException(status_code = 409, detail = f"User with username \"{existing_user.username}\" already exists.")
     users.append(user)
     return user
 
