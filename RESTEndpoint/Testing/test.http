@@ -17,6 +17,9 @@ Content-Type: application/json
     "banneduntil": ""
 }
 
+### DELETE Request (user)
+DELETE {{url}}/user?username=test_user
+
 ### GET Request (events)
 GET {{url}}/event
 
@@ -37,3 +40,6 @@ Content-Type: application/json
     "tags": ["vegetarian", "pizza", "ice cream"],
     "likes": ["test_user", "puckman"]
 }
+
+### DELETE Request (event)
+DELETE {{url}}/event?id=0bdda61a-edd9-49de-a4a4-96aaa5b31f09

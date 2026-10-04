@@ -7,6 +7,15 @@ class User(BaseModel):
     password: str
     banneduntil: str
 
+    def __eq__(self, other):
+        if not isinstance(other, User):
+            return False
+        # No 2 Users can have the same name
+        return self.username == other.username
+
+    def __hash__(self):
+        return hash(self.username)
+
 class Event(BaseModel):
     id: str
     name: str
@@ -16,6 +25,15 @@ class Event(BaseModel):
     description: str
     tags: list[str]
     likes: list[str]
+
+    def __eq__(self, other):
+        if not isinstance(other, Event):
+            return False
+        # No 2 Events can have the same id
+        return self.id == other.id
+
+    def __hash__(self):
+        return hash(self.id)
 
 
 app = FastAPI()
@@ -30,16 +48,23 @@ def get_users(username: str | None = None):
     for user in users:
         if user.username == username:
             return user
-    raise HTTPException(status_code = 404, detail = f"No user with username \"{username}\" found.")
+    raise HTTPException(status_code = 404, detail = f"No user with username {username} found.")
 
 
 @app.post("/user")
 def post_user(user: User):
-    for existing_user in users:
-        if existing_user.username == user.username:
-            raise HTTPException(status_code = 409, detail = f"User with username \"{existing_user.username}\" already exists.")
+    if user in users:
+        raise HTTPException(status_code = 409, detail = f"User with username {user.username} already exists.")
     users.append(user)
     return user
+
+@app.delete("/user")
+def delete_user(username: str):
+    for user in users:
+        if user.username == username:
+            users.remove(user)
+            return user
+    raise HTTPException(status_code = 404, detail = f"No user with username {username} found.")
 
 @app.get("/event")
 def get_events(id: str | None = None):
@@ -48,12 +73,19 @@ def get_events(id: str | None = None):
     for event in events:
         if event.id == id:
             return event
-    raise HTTPException(status_code = 404, detail = f"No event with ID \"{id}\" found.")
+    raise HTTPException(status_code = 404, detail = f"No event with ID {id} found.")
 
 @app.post("/event")
 def post_event(event: Event):
-    for existing_event in events:
-        if existing_event.id == event.id:
-            raise HTTPException(status_code = 409, detail = f"Event with ID \"{existing_event.id}\" already exists.")
+    if event in events:
+        raise HTTPException(status_code = 409, detail = f"Event with ID {event.id} already exists.")
     events.append(event)
     return event
+
+@app.delete("/event")
+def delete_event(id: str):
+    for event in events:
+        if event.id == id:
+            events.remove(event)
+            return event
+    raise HTTPException(status_code = 404, detail = f"No event with ID {id} found.")
