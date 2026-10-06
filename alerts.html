@@ -48,13 +48,86 @@
                 </svg>
               </a>
                 <a href="signup.html" class="profile-button">
-                    AM
+                    ... <!-- placeholder -->
                 </a>
             </div>
         </div>
     </header>
 </body>
-<main>
+<main class="alerts-page">
+
+    <section class="alerts-hero">
+        <p class="eyebrow">THE CAMPUS FOOD BOARD</p>
+
+        <div class="alerts-heading-row">
+            <div>
+                <h1>Free Bitez</h1>
+                <p class="alerts-subtitle">
+                    See what's available now and save your spot before it's gone.
+                </p>
+            </div>
+
+            <div class="active-alerts">
+                ... active alerts <!-- placeholder -->
+            </div>
+        </div>
+    </section>
+
+
+    <section class="alerts-toolbar">
+
+        <input
+            type="text"
+            placeholder="Search alerts or locations..."
+            class="alerts-search"
+        >
+
+        <div class="filter-buttons">
+            <button class="filter-btn active">All food</button>
+            <button class="filter-btn">Hot food</button>
+            <button class="filter-btn">Snacks</button>
+            <button class="filter-btn">Dessert</button>
+        </div>
+
+    </section>
+
+
+    <section class="alerts-layout">
+
+        <div class="alerts-list" id="alerts-list">
+            
+        </div>
+
+        
+
+        <aside class="alerts-sidebar">
+
+            <div class="sidebar-card notification-card">
+                <h3>Never miss a bite</h3>
+
+                <p>
+                    Turn on push notifications and we'll let you know
+                    the moment food is posted near you.
+                </p>
+
+                <a href="settings.html">
+                    Manage notifications →
+                </a>
+            </div>
+
+
+            <div class="sidebar-card stats-card">
+                <p>This month</p>
+
+                <h3>...</h3> <!-- placeholder -->
+
+                <p>servings saved from going to waste</p>
+            </div>
+
+        </aside>
+
+    </section>
+
 </main>
 <footer class="BB-footer">
   <div class="footer-links">
@@ -66,5 +139,8 @@
     <a>   Contact: 555-0000</a>
   </div>
   <p class="footer-copy">&copy; 2026 Buzz Bitez. All rights reserved.</p>
+
+  <script src="JavaScript/navigation.js" defer></script>
+  <script src="JavaScript/alerts.js" defer></script>
 </footer>
 </html>
