@@ -37,3 +37,15 @@ class Event:
     tags: list[str]
     likes: list[str]
 ```
+### Database setup (local development)
+Requires Docker and Python 3.11+. From the `RESTEndpoint` folder:
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env          # then set your own password in .env
+docker compose up -d          # starts Postgres on localhost:5432
+alembic upgrade head          # creates the tables
+```
+To wipe the database and start fresh: `docker compose down -v`, then `docker compose up -d` and `alembic upgrade head` again.
+
+Schema changes go through Alembic: edit `models.py`, run `alembic revision --autogenerate -m "describe change"`, review the generated file in `migrations/versions/`, then `alembic upgrade head`. Pull `main` before generating a migration so the history doesn't fork.
