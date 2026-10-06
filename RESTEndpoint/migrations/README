@@ -1,1 +1,8 @@
-Generic single-database configuration.
+Alembic migrations for the Buzz Bitez database
+
+- Never edit a migration that's already merged into main. Add a new one instead.
+- Pull main before running `alembic revision --autogenerate`, so two people
+  don't branch off the same revision ("multiple heads" error).
+- Always read the generated file before committing. Autogenerate treats a
+  renamed column as drop + add, which deletes that column's data.
+- Setup and commands: see RESTEndpoint/README.md.
