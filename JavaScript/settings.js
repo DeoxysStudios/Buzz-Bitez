@@ -21,10 +21,28 @@ document.addEventListener("DOMContentLoaded", () => {
             const id = link.dataset.section;
             history.replaceState(null, "", "#" + id);
 
+            /* Bar at the top of the page that asks for signing up */
             const accountBar = document.getElementById("account-bar");
             if (accountBar && localStorage.getItem("bbLoggedIn") === "true") {
                 accountBar.hidden = true;
             }
+
+            const notificationToggles = [
+                { element: document.getElementById("Text-toggle"), key: "bbTextNotifications" },
+                { element: document.getElementById("email-toggle"), key: "bbEmailNotifications" }
+            ];
+
+            /* Little toggle buttons for the notifs page. Reuse for other settings */
+            notificationToggles.forEach(({ element, key }) => {
+                if (!element) return;
+
+                element.checked = localStorage.getItem(key) === "true";
+
+                element.addEventListener("change", () => {
+                    localStorage.setItem(key, element.checked);
+                });
+            });
+
             showSection(id);
         });
     });
