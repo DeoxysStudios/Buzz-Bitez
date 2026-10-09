@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes"/>
     <title>Buzz Bitez</title>
-    <script src="JavaScript/navigation.js"></script>
+    <script src="JavaScript/navigation.js" defer></script>
+    <script src="JavaScript/alerts.js" defer></script>
     <link rel="manifest" href="manifest.json"/>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -93,10 +94,11 @@
 
 
     <section class="alerts-layout">
-
+        
         <div class="alerts-list" id="alerts-list">
-            
+            <!-- Alerts will be dynamically loaded here -->   
         </div>
+        
 
         
 
@@ -140,7 +142,6 @@
   </div>
   <p class="footer-copy">&copy; 2026 Buzz Bitez. All rights reserved.</p>
 
-  <script src="JavaScript/navigation.js" defer></script>
-  <script src="JavaScript/alerts.js" defer></script>
+
 </footer>
 </html>

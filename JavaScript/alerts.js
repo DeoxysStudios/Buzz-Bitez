@@ -1,8 +1,39 @@
 const alertsList = document.getElementById("alerts-list");
 
+// Test data for events
+const testEvents = [
+    {
+        tags: ["HOT FOOD"],
+        name: "Pizza after the CS Club Meetup",
+        reporter: "Computer Science Society",
+        description: "We ordered a little too much!",
+        location: "Innovation Hall · Room 204",
+        likes: [1, 2, 3, 4, 5, 6, 7, 8]
+    },
+
+    {
+        tags: ["SNACKS"],
+        name: "Bagels & coffee study break",
+        reporter: "Student Success Center",
+        description: "Assorted bagels, spreads, fruit, and coffee.",
+        location: "Main Library · Atrium",
+        likes: [1, 2, 3]
+    },
+
+    {
+        tags: ["DESSERT"],
+        name: "Leftover cupcakes",
+        reporter: "Student Activities",
+        description: "Chocolate and vanilla cupcakes left over from today's event.",
+        location: "Student Union · Lobby",
+        likes: [1, 2]
+    }
+];
+
+
 async function loadEvents() {
     try {
-        const response = await fetch("http://127.0.0.1:8000/event"); // Replace with your actual API endpoint
+        const response = await fetch("http://127.0.0.1:8000/event"); // Replace with actual API endpoint
 
         if (!response.ok) {
             throw new Error("Failed to load events");
@@ -69,5 +100,8 @@ function displayEvents(events) {
     });
 }
 
+function loadTestEvents() {
+    displayEvents(testEvents);
+}
 
-loadEvents();
+loadTestEvents(); //change this to loadEvents() when the backend is ready

@@ -252,6 +252,319 @@ main {
     min-height: 600px;
 }
 
+/* =========================
+   ALERTS PAGE
+========================= */
+
+.alerts-page {
+    background-color: #f8fbfc;
+    min-height: 100vh;
+    padding: 70px 40px;
+}
+
+.alerts-hero {
+    max-width: 1200px;
+    margin: 0 auto 35px auto;
+}
+
+.eyebrow {
+    color: #d10000;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+.alerts-heading-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 20px;
+}
+
+.alerts-heading-row h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 48px;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+.alerts-subtitle {
+    color: #5f6b72;
+    font-size: 18px;
+}
+
+.active-alerts {
+    background-color: #e6f7ec;
+    color: #24834a;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+
+/* Search + filters */
+
+.alerts-toolbar {
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+
+    background: white;
+
+    border: 1px solid #e2e8eb;
+    border-radius: 14px;
+
+    padding: 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.alerts-search {
+    flex: 1;
+
+    border: none;
+    outline: none;
+
+    font-size: 16px;
+
+    padding: 12px 16px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.filter-btn {
+    border: 1px solid #e2e8eb;
+    background: white;
+    color: #5f6b72;
+
+    padding: 10px 16px;
+
+    border-radius: 8px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.filter-btn.active {
+    background: #d10000;
+    color: white;
+    border-color: #d10000;
+}
+
+
+/* =========================
+   ALERT CARDS
+========================= */
+
+.alerts-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 25px;
+}
+
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.alert-card {
+    background: white;
+
+    border: 1px solid #e2e8eb;
+    border-radius: 16px;
+
+    display: flex;
+    overflow: hidden;
+
+    min-height: 220px;
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+
+/* Left side image section */
+
+.alert-image {
+    width: 210px;
+    min-width: 210px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 72px;
+}
+
+.alert-image.hot-food {
+    background-color: #fff1c7;
+}
+
+.alert-image.snacks {
+    background-color: #dff4f8;
+}
+
+
+/* Right side content */
+
+.alert-content {
+    flex: 1;
+    padding: 25px;
+}
+
+.alert-category {
+    color: #d10000;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    letter-spacing: 1.5px;
+
+    margin-bottom: 10px;
+}
+
+.alert-content h2 {
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 26px;
+    color: #111;
+
+    margin-bottom: 5px;
+}
+
+.alert-host {
+    color: #7a858b;
+
+    font-size: 14px;
+
+    margin-bottom: 18px;
+}
+
+.alert-description {
+    color: #5f6b72;
+
+    line-height: 1.5;
+
+    margin-bottom: 20px;
+}
+
+
+/* Location / time / servings */
+
+.alert-meta {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 18px;
+
+    color: #5f6b72;
+
+    font-size: 14px;
+
+    margin-bottom: 20px;
+}
+
+
+/* Bottom of card */
+
+.alert-card-footer {
+    border-top: 1px solid #edf0f2;
+
+    padding-top: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    color: #6d787e;
+
+    font-size: 14px;
+}
+
+.alert-card-footer a {
+    color: #d10000;
+
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.alert-card-footer a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.alerts-sidebar {
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+.sidebar-card {
+    border-radius: 16px;
+
+    padding: 24px;
+}
+
+.notification-card {
+    background-color: #dff6fb;
+}
+
+.notification-card h3 {
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 22px;
+
+    margin-bottom: 12px;
+}
+
+.notification-card p {
+    color: #5f6b72;
+
+    line-height: 1.5;
+
+    margin-bottom: 15px;
+}
+
+.notification-card a {
+    color: #d10000;
+
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.stats-card {
+    background-color: #172126;
+    color: white;
+}
+
+.stats-card h3 {
+    color: #f4c430;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    font-size: 42px;
+
+    margin: 15px 0 5px 0;
+}
+
+.stats-card p {
+    color: #c0c8cc;
+}
 
 /* -------------------------
    Footer
