@@ -17,6 +17,16 @@ password_hash = PasswordHash.recommended()
 DB = Annotated[Session, Depends(get_db)]
 
 
+class ErrorOut(BaseModel):
+    detail: str
+
+
+# Extra status codes for the docs page. FastAPI only lists 200/201 and 422 on
+# its own; these make the 404/409 cases visible to whoever reads /docs.
+NOT_FOUND = {404: {"model": ErrorOut, "description": "Not found"}}
+CONFLICT = {409: {"model": ErrorOut, "description": "Conflict"}}
+
+
 # ---------- request and response models ----------
 # Max lengths match the column sizes in models.py, so oversized input gets a
 # 422 from validation instead of a database error.
@@ -25,6 +35,10 @@ class UserIn(BaseModel):
     username: str = Field(min_length=1, max_length=50)
     email: EmailStr
     password: str = Field(min_length=8)
+
+    model_config = {"json_schema_extra": {"examples": [
+        {"username": "test_user", "email": "test_user@rpi.edu", "password": "password123"}
+    ]}}
 
 
 class UserOut(BaseModel):
@@ -43,6 +57,14 @@ class EventUpdate(BaseModel):
     times: list[TimeWindow] = Field(min_length=1)
     description: str | None = None
     tags: list[str] = []
+
+    model_config = {"json_schema_extra": {"examples": [{
+        "name": "APO pizza night (moved)",
+        "location": "DCC 308",
+        "times": [["2026-10-10T12:00:00-04:00", "2026-10-10T14:00:00-04:00"]],
+        "description": "Moved upstairs.",
+        "tags": ["pizza"],
+    }]}}
 
     @field_validator("times")
     @classmethod
@@ -65,6 +87,15 @@ class EventIn(EventUpdate):
     # of the request body, so nobody can post as someone else.
     reporter: str = Field(min_length=1, max_length=50)
 
+    model_config = {"json_schema_extra": {"examples": [{
+        "name": "APO pizza night",
+        "reporter": "test_user",
+        "location": "Student Union",
+        "times": [["2026-10-10T12:00:00-04:00", "2026-10-10T14:00:00-04:00"]],
+        "description": "Free pizza in the lobby.",
+        "tags": ["pizza", "vegetarian"],
+    }]}}
+
 
 class EventOut(BaseModel):
     event_id: str
@@ -76,10 +107,23 @@ class EventOut(BaseModel):
     tags: list[str]
     likes: list[str]
 
+    model_config = {"json_schema_extra": {"examples": [{
+        "event_id": "0bdda61a-edd9-49de-a4a4-96aaa5b31f09",
+        "name": "APO pizza night",
+        "reporter": "test_user",
+        "location": "Student Union",
+        "times": [["2026-10-10T12:00:00-04:00", "2026-10-10T14:00:00-04:00"]],
+        "description": "Free pizza in the lobby.",
+        "tags": ["pizza", "vegetarian"],
+        "likes": [],
+    }]}}
+
 
 class LikeIn(BaseModel):
     # TODO: same as reporter, should come from the logged-in user.
     username: str
+
+    model_config = {"json_schema_extra": {"examples": [{"username": "test_user"}]}}
 
 
 # ---------- users ----------
@@ -89,7 +133,7 @@ def list_users(db: DB):
     return crud.list_users(db)
 
 
-@app.get("/users/{username}", response_model=UserOut)
+@app.get("/users/{username}", response_model=UserOut, responses=NOT_FOUND)
 def get_user(username: str, db: DB):
     user = crud.get_user(db, username)
     if user is None:
@@ -97,7 +141,7 @@ def get_user(username: str, db: DB):
     return user
 
 
-@app.post("/users", response_model=UserOut, status_code=201)
+@app.post("/users", response_model=UserOut, status_code=201, responses=CONFLICT)
 def create_user(user: UserIn, db: DB):
     try:
         return crud.create_user(db, user.username, user.email, password_hash.hash(user.password))
@@ -107,7 +151,7 @@ def create_user(user: UserIn, db: DB):
         raise HTTPException(409, f"Email {user.email} is already registered.")
 
 
-@app.delete("/users/{username}", status_code=204)
+@app.delete("/users/{username}", status_code=204, responses=NOT_FOUND | CONFLICT)
 def delete_user(username: str, db: DB):
     try:
         deleted = crud.delete_user(db, username)
@@ -125,7 +169,7 @@ def list_events(db: DB):
     return crud.list_events(db)
 
 
-@app.get("/events/{event_id}", response_model=EventOut)
+@app.get("/events/{event_id}", response_model=EventOut, responses=NOT_FOUND)
 def get_event(event_id: uuid.UUID, db: DB):
     event = crud.get_event(db, event_id)
     if event is None:
@@ -144,7 +188,7 @@ def create_event(event: EventIn, db: DB):
         raise HTTPException(422, f"Reporter {event.reporter} is not a registered user.")
 
 
-@app.put("/events/{event_id}", response_model=EventOut)
+@app.put("/events/{event_id}", response_model=EventOut, responses=NOT_FOUND)
 def update_event(event_id: uuid.UUID, event: EventUpdate, db: DB):
     updated = crud.update_event(db, event_id, event.model_dump(mode="json"))
     if updated is None:
@@ -152,7 +196,7 @@ def update_event(event_id: uuid.UUID, event: EventUpdate, db: DB):
     return updated
 
 
-@app.delete("/events/{event_id}", status_code=204)
+@app.delete("/events/{event_id}", status_code=204, responses=NOT_FOUND)
 def delete_event(event_id: uuid.UUID, db: DB):
     if not crud.delete_event(db, event_id):
         raise HTTPException(404, f"No event with event_id {event_id} found.")
@@ -163,7 +207,7 @@ def delete_event(event_id: uuid.UUID, db: DB):
 # Liking is idempotent: liking twice or un-liking something you never liked
 # is not an error, so a double-click never shows the user a failure.
 
-@app.post("/events/{event_id}/likes", status_code=204)
+@app.post("/events/{event_id}/likes", status_code=204, responses=NOT_FOUND)
 def add_like(event_id: uuid.UUID, like: LikeIn, db: DB):
     try:
         crud.add_like(db, event_id, like.username)
