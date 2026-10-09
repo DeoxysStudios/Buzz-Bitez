@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes"/>
     <title>Buzz Bitez</title>
-    <script src="JavaScript/navigation.js"></script>
+    <script src="JavaScript/navigation.js" defer></script>
+    <script src="JavaScript/broadcast.js" defer></script>
     <link rel="manifest" href="manifest.json"/>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -54,7 +55,242 @@
         </div>
     </header>
 </body>
-<main>
+<main class="broadcast-page">
+    <!-- Page heading -->
+    <section class="broadcast-hero">
+        <p class="eyebrow">FOR EVENT COORDINATORS</p>
+
+        <h1>Broadcast a food alert</h1>
+
+        <p class="broadcast-subtitle">
+            Share your extras with the campus community in under a minute.
+        </p>
+    </section>
+
+    <form id="broadcast-form" class="broadcast-form">
+
+        <section class="broadcast-card">
+
+            <div class="section-number">1</div>
+
+            <div class="broadcast-section-content">
+
+                <h2>What's on the menu?</h2>
+
+                <p class="section-description">
+                    Give students a quick idea of what's available.
+                </p>
+
+                <label for="event-title">
+                    Alert title
+                </label>
+
+                <input
+                    type="text"
+                    id="event-title"
+                    placeholder="e.g. Leftover pizza after the club meeting"
+                    required
+                >
+
+                <div class="form-row">
+
+                    <div class="form-group">
+
+                        <label for="food-type">
+                            Food type
+                        </label>
+
+                        <select id="food-type" required>
+                            <option value="HOT FOOD">Meal</option>
+                            <option value="SNACKS">Snacks</option>
+                            <option value="DESSERT">Dessert</option>
+                            <option value="DRINKS">Drinks</option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="servings">
+                            Estimated servings
+                        </label>
+
+                        <input
+                            type="number"
+                            id="servings"
+                            min="1"
+                            placeholder="30"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <label for="description">
+                    Event summary
+                </label>
+
+                <textarea
+                    id="description"
+                    placeholder="Tell students what's available and any dietary details..."
+                    required
+                ></textarea>
+
+                <label for="food-photo">
+                    Food photo
+                </label>
+                
+                <input
+                    type="file"
+                    id="food-photo"
+                    accept="image/*"
+                >
+
+            </div>
+            
+
+        </section>
+
+        <section class="broadcast-card">
+
+            <div class="section-number">2</div>
+
+            <div class="broadcast-section-content">
+
+                <h2>Where and when?</h2>
+
+                <p class="section-description">
+                    Make it easy for hungry students to find you.
+                </p>
+
+
+                <label for="location">
+                    Campus location
+                </label>
+
+                <input
+                    type="text"
+                    id="location"
+                    placeholder="Building and room number"
+                    required
+                >
+
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="event-date">
+                            Event date
+                        </label>
+                
+                        <input
+                            type="date"
+                            id="event-date"
+                            required
+                        >
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="start-time">
+                            Start time
+                        </label>
+                
+                        <input
+                            type="time"
+                            id="start-time"
+                            required
+                        >
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="end-time">
+                            End time
+                        </label>
+                
+                        <input
+                            type="time"
+                            id="end-time"
+                            required
+                        >
+                    </div>
+                
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="broadcast-card">
+
+            <div class="section-number">3</div>
+
+            <div class="broadcast-section-content">
+
+                <h2>Stay in touch</h2>
+
+                <p class="section-description">
+                    Choose whether students can ask you questions.
+                </p>
+
+
+                <label class="checkbox-option">
+
+                    <input
+                        type="checkbox"
+                        id="message-board"
+                        checked
+                    >
+
+                    <span>
+                        <strong>Enable message board</strong>
+                        <small>
+                            Students can leave questions under your post.
+                        </small>
+                    </span>
+
+                </label>
+
+                <label class="checkbox-option">
+
+                    <input
+                        type="checkbox"
+                        id="direct-messages"
+                        checked
+                    >
+                    <span>
+                        <strong>Allow direct messages</strong>
+                        <small>
+                            Students can contact the coordinator privately.
+                        </small>
+                    </span>
+
+                </label>
+
+            </div>
+
+        </section>
+
+
+        <!-- Submit area -->
+        <div class="broadcast-submit-row">
+
+            <p>
+                Your alert will be sent to students who follow campus food updates.
+            </p>
+
+            <button type="submit" class="broadcast-submit">
+                Broadcast alert
+            </button>
+
+        </div>
+
+        <p id="broadcast-status"></p>
+
+    </form>
+
 </main>
 <footer class="BB-footer">
   <div class="footer-links">
