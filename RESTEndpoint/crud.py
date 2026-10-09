@@ -20,6 +20,14 @@ class EventNotFound(Exception):
     pass
 
 
+class UserNotFound(Exception):
+    pass
+
+
+class UserHasEvents(Exception):
+    pass
+
+
 _WITH_CHILDREN = (
     selectinload(Event.times),
     selectinload(Event.tags),
@@ -40,32 +48,62 @@ def _event_to_dict(event: Event) -> dict:
     }
 
 
-# users
-
-def create_user(db: Session, username: str, email: str, password_hash: str) -> dict:
-    db.add(User(username=username, email=email, password_hash=password_hash))
-    try:
-        db.commit()
-    except IntegrityError as e:
-        db.rollback()
-        constraint = e.orig.diag.constraint_name
-        if constraint == "users_pkey":
-            raise UsernameTaken(username) from e
-        if constraint == "users_email_key":
-            raise EmailTaken(email) from e
-        raise
-    return {"username": username, "email": email}
-
-def get_user(db: Session, username: str) -> dict | None:
-    # Return the user's public fields, or None if not found
-    user = db.get(User, username)
-    if user is None:
-        return None
+def _user_to_dict(user: User) -> dict:
+    # Public fields only. password_hash never leaves this module.
     return {
         "username": user.username,
         "email": user.email,
         "banned_until": user.banned_until.isoformat() if user.banned_until else None,
     }
+
+
+def _constraint(e: IntegrityError) -> str | None:
+    return e.orig.diag.constraint_name
+
+
+# users
+
+def create_user(db: Session, username: str, email: str, password_hash: str) -> dict:
+    user = User(username=username, email=email, password_hash=password_hash)
+    db.add(user)
+    try:
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        if _constraint(e) == "users_pkey":
+            raise UsernameTaken(username) from e
+        if _constraint(e) == "users_email_key":
+            raise EmailTaken(email) from e
+        raise
+    return _user_to_dict(user)
+
+
+def list_users(db: Session) -> list[dict]:
+    return [_user_to_dict(u) for u in db.scalars(select(User).order_by(User.username))]
+
+
+def get_user(db: Session, username: str) -> dict | None:
+    # Return the user's public fields, or None if not found
+    user = db.get(User, username)
+    return _user_to_dict(user) if user else None
+
+
+def delete_user(db: Session, username: str) -> bool:
+    # True if deleted, False if no such user.
+    # Raises UserHasEvents if they reported events (the foreign key blocks it).
+    # Their likes are removed automatically by ON DELETE CASCADE.
+    user = db.get(User, username)
+    if user is None:
+        return False
+    db.delete(user)
+    try:
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        if _constraint(e) == "events_reporter_fkey":
+            raise UserHasEvents(username) from e
+        raise
+    return True
 
 # events
 
@@ -92,8 +130,15 @@ def create_event(db: Session, data: dict, reporter: str) -> dict:
         tags=[EventTag(tag=t) for t in dict.fromkeys(data.get("tags", []))],
     )
     db.add(event)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as e:
+        db.rollback()
+        if _constraint(e) == "events_reporter_fkey":
+            raise UserNotFound(reporter) from e
+        raise
     return _event_to_dict(event)
+
 
 def update_event(db: Session, event_id: uuid.UUID, data: dict) -> dict | None:
     # Replace the event's fields, times, and tags with what's in data. Return the updated dict, or None if not found
@@ -135,11 +180,14 @@ def add_like(db: Session, event_id: uuid.UUID, username: str) -> bool:
         return True
     except IntegrityError as e:
         db.rollback()
-        if e.orig.diag.constraint_name == "likes_pkey":
+        if _constraint(e) == "likes_pkey":
             return False
-        if e.orig.diag.constraint_name == "likes_event_id_fkey":
+        if _constraint(e) == "likes_event_id_fkey":
             raise EventNotFound(event_id) from e
+        if _constraint(e) == "likes_username_fkey":
+            raise UserNotFound(username) from e
         raise
+
 
 def remove_like(db: Session, event_id: uuid.UUID, username: str) -> bool:
     # True if a like was removed, False if there wasn't one
