@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes"/>
     <title>Buzz Bitez</title>
-    <script src="JavaScript/navigation.js"></script>
+    <script src="JavaScript/navigation.js" defer></script>
+    <script src="JavaScript/settings.js" defer></script>
     <link rel="manifest" href="manifest.json"/>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -53,9 +54,189 @@
             </div>
         </div>
     </header>
-</body>
-<main>
+
+ <!-- Shown when there is no account -->
+    <a href="signup.html" class="account-bar" id="account-bar">
+        You're not signed in. <span>Sign up</span> to save your settings.
+    </a>
+
+<main class="settings-page">
+
+    <section class="settings-hero">
+        <p class="eyebrow">YOUR PREFERENCES</p>
+        <h1>Settings</h1>
+    </section>
+
+
+    <section class="settings-layout">
+
+        <!-- Side box -->
+        <aside class="settings-sidebar">
+            <nav class="settings-menu" aria-label="Settings sections">
+
+                <a href="#account" class="settings-menu-link active" data-section="account">
+                    <span class="settings-menu-title">Account management</span>
+                </a>
+
+                <a href="#alert-settings" class="settings-menu-link" data-section="alert-settings">
+                    <span class="settings-menu-title">Alert settings</span>
+                </a>
+
+                <a href="#reports" class="settings-menu-link" data-section="reports">
+                    <span class="settings-menu-title">Reports</span>
+                </a>
+
+                <a href="#appearance" class="settings-menu-link" data-section="appearance">
+                    <span class="settings-menu-title">Appearance</span>
+                </a>
+
+            </nav>
+        </aside>
+
+
+        <!-- Settings content (only one panel shows at a time) -->
+        <div class="settings-content">
+
+            <!-- Account management -->
+            <section class="settings-panel active" id="account">
+
+                <h2>Account management</h2>
+
+                <div class="settings-card">
+                    <h3>Profile</h3>
+
+                    <!-- Currently, for no ACC -->
+                    <a href="signup.html" class="settings-action" >
+                        <span>Sign up</span>
+                    </a>
+
+                    <!-- #################### ADD WITH ACCOUNTS #####################
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Name</p>
+                            <p class="settings-value">... </p>
+                        </div>
+                        <a href="#account" class="settings-action">Edit</a>
+                    </div>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Email</p>
+                            <p class="settings-value">... </p>
+                        </div>
+                        <a href="#account" class="settings-action">Edit</a>
+                    </div>
+                </div>
+                <div class="settings-card">
+                    <h3>Security</h3>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Password</p>
+                            <p class="settings-value">... </p>
+                        </div>
+                        <a href="#account" class="settings-action">Change</a>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Delete account</h3>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-value">... </p>
+                        </div>
+                        <a href="#account" class="settings-action danger">Delete</a>
+                    </div>
+                #################### ADD WITH ACCOUNTS ##################### -->
+
+                </div>
+            </section>
+             
+
+            <!-- Alert settings -->
+            <section class="settings-panel" id="alert-settings">
+                <h2>Alert settings</h2>
+                <div class="settings-card">
+                    <h3>Notifications</h3>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Push notifications</p>
+                            <p class="settings-value">... <!-- placeholder: on/off toggle --></p>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Email notifications</p>
+                            <p class="settings-value">... <!-- placeholder: on/off toggle --></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>Food preferences</h3>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Food types</p>
+                            <p class="settings-value">... <!-- placeholder: hot food, snacks, dessert --></p>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Distance</p>
+                            <p class="settings-value">... <!-- placeholder: distance from me --></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- Reports -->
+            <section class="settings-panel" id="reports">
+                <h2>Manage Alerts</h2>
+                
+                <div class="settings-card">
+                    <h3>Your activity</h3>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Spots saved</p>
+                            <p class="settings-value">... <!-- placeholder --></p>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Broadcasts posted</p>
+                            <p class="settings-value">... <!-- placeholder --></p>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- Appearance -->
+            <section class="settings-panel" id="appearance">
+                <h2>Appearance</h2>
+                <div class="settings-card">
+                    <h3>Display</h3>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Theme</p>
+                            <p class="settings-value">... <!-- placeholder: light / dark --></p>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <div>
+                            <p class="settings-label">Text size</p>
+                            <p class="settings-value">... <!-- placeholder --></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+    </section>
+
 </main>
+
 <footer class="BB-footer">
   <div class="footer-links">
     <a href="home.html">About</a>
@@ -67,4 +248,6 @@
   </div>
   <p class="footer-copy">&copy; 2026 Buzz Bitez. All rights reserved.</p>
 </footer>
+
+</body>
 </html>
