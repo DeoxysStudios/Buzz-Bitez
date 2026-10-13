@@ -566,6 +566,301 @@ main {
     color: #c0c8cc;
 }
 
+
+/* =========================
+   SETTINGS PAGE
+========================= */
+
+.settings-page {
+    background-color: #f8fbfc;
+    min-height: 100vh;
+    padding: 70px 40px;
+}
+
+.settings-hero {
+    max-width: 1200px;
+    margin: 0 auto 35px auto;
+}
+
+.settings-hero h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 48px;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+.settings-subtitle {
+    color: #5f6b72;
+    font-size: 18px;
+}
+
+.settings-layout {
+    max-width: 1200px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 25px;
+    align-items: start;
+}
+
+
+/* Side box */
+
+.settings-sidebar {
+    background: white;
+
+    border: 1px solid #e2e8eb;
+    border-radius: 16px;
+
+    padding: 12px;
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.settings-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.settings-menu-link {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    padding: 12px 14px;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    transition: background-color 0.2s ease;
+}
+
+.settings-menu-link:hover {
+    background-color: #f5f9fa;
+}
+
+.settings-menu-title {
+    color: #1f2933;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.settings-menu-desc {
+    color: #7a858b;
+
+    font-size: 13px;
+}
+
+.settings-menu-link.active {
+    background-color: #dff6fb;
+}
+
+.settings-menu-link.active .settings-menu-title {
+    color: #d10000;
+}
+
+
+/* Content panels */
+
+.settings-panel {
+    display: none;
+}
+
+.settings-panel.active {
+    display: block;
+}
+
+.settings-panel h2 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 30px;
+    color: #111;
+
+    margin-bottom: 6px;
+}
+
+.settings-panel-intro {
+    color: #5f6b72;
+
+    margin-bottom: 22px;
+}
+
+.settings-card {
+    background: white;
+
+    border: 1px solid #e2e8eb;
+    border-radius: 16px;
+
+    padding: 24px;
+    margin-bottom: 20px;
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.settings-card h3 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 20px;
+    color: #111;
+
+    margin-bottom: 8px;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 14px 0;
+
+    border-top: 1px solid #edf0f2;
+}
+
+.settings-label {
+    color: #1f2933;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    margin-bottom: 3px;
+}
+
+.settings-value {
+    color: #5f6b72;
+
+    font-size: 14px;
+}
+
+.settings-action {
+    color: #d10000;
+
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.settings-action:hover {
+    text-decoration: underline;
+}
+
+.settings-action.danger {
+    color: #a30000;
+}
+
+/* No-account bar */
+
+.account-bar {
+    display: block;
+
+    background-color: #dff6fb;
+    color: #1f2933;
+
+    padding: 10px 20px;
+
+    text-align: center;
+    text-decoration: none;
+
+    font-size: 14px;
+
+    transition: background-color 0.2s ease;
+}
+
+.account-bar:hover {
+    background-color: #c9eef6;
+}
+
+.account-bar span {
+    color: #d10000;
+    font-weight: bold;
+}
+
+.account-bar[hidden] {
+    display: none;
+}
+
+.toggle {
+    position: relative;
+    display: inline-block;
+
+    width: 46px;
+    height: 26px;
+
+    flex-shrink: 0;
+}
+
+.toggle-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    opacity: 0;
+    cursor: pointer;
+
+    z-index: 1;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    background-color: #cfd8dc;
+    border-radius: 999px;
+
+    transition: background-color 0.2s ease;
+}
+
+.toggle-slider::before {
+    content: "";
+
+    position: absolute;
+
+    width: 20px;
+    height: 20px;
+
+    top: 3px;
+    left: 3px;
+
+    background-color: #ffffff;
+    border-radius: 50%;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+
+    transition: transform 0.2s ease;
+}
+
+.toggle-input:checked + .toggle-slider {
+    background-color: #24834a;
+}
+
+.toggle-input:checked + .toggle-slider::before {
+    transform: translateX(20px);
+}
+
+.toggle-input:focus-visible + .toggle-slider {
+    outline: 2px solid #1f2933;
+    outline-offset: 2px;
+}
+
+@media (max-width: 800px) {
+
+    .settings-page {
+        padding: 40px 20px;
+    }
+
+    .settings-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* -------------------------
    Footer
 ------------------------- */
