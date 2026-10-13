@@ -1,2 +1,5 @@
 .vscode/settings.json
 RESTEndpoint/__pycache__/**
+.env
+.venv/
+__pycache__/
