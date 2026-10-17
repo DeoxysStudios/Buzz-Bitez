@@ -63,3 +63,9 @@ Content-Type: application/json
 
 ### Remove a like
 DELETE {{url}}/events/0bdda61a-edd9-49de-a4a4-96aaa5b31f09/likes/test_user
+
+### Verify Login (Correct Login)
+GET {{url}}/login/test_user/password123
+
+### Verify Login (Incorrect Login)
+GET {{url}}/login/test_user/password67

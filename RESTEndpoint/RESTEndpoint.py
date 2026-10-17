@@ -222,3 +222,15 @@ def add_like(event_id: uuid.UUID, like: LikeIn, db: DB):
 def remove_like(event_id: uuid.UUID, username: str, db: DB):
     crud.remove_like(db, event_id, username)
     return Response(status_code=204)
+
+# ---------- login ----------
+
+@app.get("/login/{username}/{password}")
+def get_login(username: str, password: str, db: DB):
+    user = crud.get_user(db, username)
+    if user is None:
+        raise HTTPException(404, f"No user with username {username} found.")
+    stored_hash = crud.get_password_hash(db, username)
+    if not password_hash.verify(password, stored_hash):
+        raise HTTPException(401, "Invalid password.")
+    return user
