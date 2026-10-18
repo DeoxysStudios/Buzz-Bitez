@@ -3,6 +3,9 @@
   // ---------- Config ----------
   const REQUIRE_EDU = true;          // set false to accept any email address
   const REDIRECT_AFTER = "home.html";
+  const SERVER_BASE_URL = "http://127.0.0.1:8000"; // TODO: Replace this url when we have an actual server
+  const SERVER_USERS_URL = SERVER_BASE_URL + "/users";
+  const SERVER_LOGIN_URL = SERVER_BASE_URL + "/login";
 
   const modes = {
     signup: {
@@ -11,6 +14,7 @@
       submit: "Create account",
       fields: [
         { id: "name",     label: "Full name",        type: "text",     auto: "name",         ph: "Alex Morgan" },
+        { id: "username", label: "Username",         type: "username", auto: "username",     ph: "amorgan123" },
         { id: "email",    label: "University email", type: "email",    auto: "email",        ph: "you@university.edu" },
         { id: "password", label: "Password",         type: "password", auto: "new-password", ph: "At least 8 characters" },
         { id: "confirm",  label: "Confirm password", type: "password", auto: "new-password", ph: "Re-enter your password" },
@@ -21,8 +25,8 @@
       desc: "Log in to see what's being served right now.",
       submit: "Log in",
       fields: [
-        { id: "email",    label: "University email", type: "email",    auto: "email",            ph: "you@university.edu" },
-        { id: "password", label: "Password",         type: "password", auto: "current-password", ph: "Your password" },
+        { id: "username", label: "Username", type: "username", auto: "username",         ph: "amorgan123"    },
+        { id: "password", label: "Password", type: "password", auto: "current-password", ph: "Your password" },
       ],
     },
   };
@@ -163,13 +167,14 @@
   // ---------- Validation ----------
   const rules = {
     name:     (v) => (v.trim().length < 2 ? "Enter your full name." : ""),
+    username: (v) => !/^\w+$/.test(v) ? "Enter a valid username." : "",
     email:    (v) => !/^\S+@\S+\.\S+$/.test(v) ? "Enter a valid email address."
                    : REQUIRE_EDU && mode === "signup" && !/\.edu$/i.test(v.trim()) ? "Use your university (.edu) email." : "",
     password: (v) => (mode === "signup" && v.length < 8 ? "Use at least 8 characters." : !v ? "Enter your password." : ""),
     confirm:  (v, all) => (v !== all.password ? "Passwords don't match." : ""),
   };
 
-  function validate(form) {
+  async function validate(form) {
     const values = Object.fromEntries(new FormData(form));
     let firstBad = null;
     modes[mode].fields.forEach((f) => {
@@ -179,19 +184,74 @@
       input.setAttribute("aria-invalid", !!msg);
       if (msg && !firstBad) firstBad = input;
     });
-    firstBad?.focus();
-    return firstBad ? null : values;
+
+    if (firstBad) {
+      firstBad.focus();
+      return null;
+    }
+
+    let validLoginInfo = true;
+    let typedUsername = values["username"];
+    let typedPassword = values["password"];
+
+    if (mode === "signup") {
+      try {
+        const response = await fetch(`${SERVER_USERS_URL}/${typedUsername}`);
+        if (response.ok) {
+          const msg = "This username is already in use.";
+          form.querySelector("#e-username").textContent = msg;
+          form.querySelector("#f-username").setAttribute("aria-invalid", !!msg);
+          validLoginInfo = false;
+        }
+      } catch { }
+    } else {
+      try {
+        const response = await fetch(`${SERVER_LOGIN_URL}/${typedUsername}/${typedPassword}`);
+        if (!response.ok) {
+          throw new Error("Login request failed!");
+        }
+      } catch {
+        const msg = "Incorrect username or password.";
+        form.querySelector("#e-username").textContent = msg;
+        form.querySelector("#f-username").setAttribute("aria-invalid", !!msg);
+        form.querySelector("#e-password").textContent = msg;
+        form.querySelector("#f-password").setAttribute("aria-invalid", !!msg);
+        validLoginInfo = false;
+      }
+    }
+
+    if (validLoginInfo)
+      return values;
+
+    form.querySelector("#f-username").focus();
+    return null;
   }
 
   // ---------- Submit ----------
-  function submit(values, form) {
-    // TODO: replace with a real call to your backend, e.g.
-    // fetch("/api/" + mode, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(values) })
-    const user = {
-      name: values.name || (values.email.split("@")[0]),
-      email: values.email.trim(),
-    };
-    try { (remember ? localStorage : sessionStorage).setItem("bb-user", JSON.stringify(user)); } catch {}
+  async function submit(values, form) {
+    let username = values.username
+    let password = values.password
+    var user;
+    if (mode === "signup") {
+      const data = {
+        username: username,
+        email: values.email,
+        password: password,
+      };
+      user = await fetch(SERVER_USERS_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+    } else {
+      const response = await fetch(`${SERVER_LOGIN_URL}/${username}/${password}`);
+      if (!response.ok)
+        throw new Error(`Error fetching user with name ${username}. Status: ${response.status}`);
+      user = await response.json();
+    }
+    try { (remember ? localStorage : sessionStorage).setItem("bb-user", user); } catch {}
     form.querySelector(".su-submit").textContent = mode === "signup" ? "Account created" : "Logged in";
     setTimeout(() => {
       if (embedded) render(document.getElementById("signup-root"));   // swap form for welcome card
@@ -228,10 +288,10 @@
       if (sw) { remember = !remember; sw.setAttribute("aria-checked", remember); }
     });
 
-    root.addEventListener("submit", (e) => {
+    root.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const values = validate(e.target);
-      if (values) submit(values, e.target);
+      const values = await validate(e.target);
+      if (values) await submit(values, e.target);
     });
 
     // clear a field's error as soon as the person edits it
