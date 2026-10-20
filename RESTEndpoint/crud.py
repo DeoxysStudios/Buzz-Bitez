@@ -53,6 +53,7 @@ def _user_to_dict(user: User) -> dict:
     return {
         "username": user.username,
         "email": user.email,
+        "full_name": user.full_name,
         "banned_until": user.banned_until.isoformat() if user.banned_until else None,
     }
 
@@ -63,8 +64,8 @@ def _constraint(e: IntegrityError) -> str | None:
 
 # users
 
-def create_user(db: Session, username: str, email: str, password_hash: str) -> dict:
-    user = User(username=username, email=email, password_hash=password_hash)
+def create_user(db: Session, username: str, email: str, full_name: str, password_hash: str) -> dict:
+    user = User(username=username, email=email, full_name=full_name, password_hash=password_hash)
     db.add(user)
     try:
         db.commit()

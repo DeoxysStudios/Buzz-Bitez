@@ -34,10 +34,11 @@ CONFLICT = {409: {"model": ErrorOut, "description": "Conflict"}}
 class UserIn(BaseModel):
     username: str = Field(min_length=1, max_length=50)
     email: EmailStr
+    full_name: str = Field(min_length=1, max_length=100)
     password: str = Field(min_length=8)
 
     model_config = {"json_schema_extra": {"examples": [
-        {"username": "test_user", "email": "test_user@rpi.edu", "password": "password123"}
+                {"username": "test_user", "email": "test_user@rpi.edu", "full_name": "Test User", "password": "password123"}
     ]}}
 
 
@@ -45,6 +46,7 @@ class UserOut(BaseModel):
     # No password field: response_model=UserOut strips anything not listed here.
     username: str
     email: str
+    full_name: str
     banned_until: str | None = None
 
 
@@ -144,7 +146,7 @@ def get_user(username: str, db: DB):
 @app.post("/users", response_model=UserOut, status_code=201, responses=CONFLICT)
 def create_user(user: UserIn, db: DB):
     try:
-        return crud.create_user(db, user.username, user.email, password_hash.hash(user.password))
+        return crud.create_user(db, user.username, user.email, user.full_name, password_hash.hash(user.password))
     except crud.UsernameTaken:
         raise HTTPException(409, f"Username {user.username} already exists.")
     except crud.EmailTaken:
