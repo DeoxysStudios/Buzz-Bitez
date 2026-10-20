@@ -14,6 +14,7 @@ class User(Base):
 
     username: Mapped[str] = mapped_column(String(50), primary_key=True)
     email: Mapped[str] = mapped_column(String(255), unique=True)
+    full_name: Mapped[str] = mapped_column(String(100))
     password_hash: Mapped[str]
     banned_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
