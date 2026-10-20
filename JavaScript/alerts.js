@@ -1,5 +1,7 @@
 const alertsList = document.getElementById("alerts-list");
 
+const discoverAlertsList = document.getElementById("discover-alerts-list");
+
 // Function to determine the CSS class based on the event's first tag
 function getEventTypeClass(event) {
     const firstTag = event.tags[0];
@@ -149,9 +151,9 @@ async function loadEvents() {
 }
 
 
-function displayEvents(events) {
+function displayEvents(events, container) {
 
-    alertsList.innerHTML = "";
+    container.innerHTML = "";
 
     events.forEach(function(event) {
 
@@ -223,19 +225,39 @@ function displayEvents(events) {
             </div>
         `;
 
-        alertsList.appendChild(card);
+        container.appendChild(card);
     });
 }
 
 function loadLocalEvents() {
+
     const savedEvents =
         JSON.parse(localStorage.getItem("buzzBitezEvents")) || [];
 
+    // Soonest events first
     savedEvents.sort(function(a, b) {
         return new Date(a.startTime) - new Date(b.startTime);
     });
 
-    displayEvents(savedEvents);
+
+    // Alerts page: show every event
+    if (alertsList) {
+        displayEvents(savedEvents, alertsList);
+    }
+
+
+    // Discover page: only show first 3
+    if (discoverAlertsList) {
+
+        const freshEvents = savedEvents.slice(0, 3);
+
+        displayEvents(
+            freshEvents,
+            discoverAlertsList
+        );
+    }
 }
+
+
 
 loadLocalEvents(); //change this to loadEvents() when the backend is ready
