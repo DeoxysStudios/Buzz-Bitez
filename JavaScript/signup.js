@@ -170,7 +170,8 @@
     username: (v) => !/^\w+$/.test(v) ? "Enter a valid username." : "",
     email:    (v) => !/^\S+@\S+\.\S+$/.test(v) ? "Enter a valid email address."
                    : REQUIRE_EDU && mode === "signup" && !/\.edu$/i.test(v.trim()) ? "Use your university (.edu) email." : "",
-    password: (v) => (mode === "signup" && v.length < 8 ? "Use at least 8 characters." : !v ? "Enter your password." : ""),
+    password: (v) => mode === "signup" && v.length < 8 ? "Use at least 8 characters."
+                   : !/^\w+$/.test(v) ? "Enter a valid password." : "",
     confirm:  (v, all) => (v !== all.password ? "Passwords don't match." : ""),
   };
 
