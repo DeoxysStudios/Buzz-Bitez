@@ -43,6 +43,8 @@ class EventIn:
     image: str         # The data url of the image
     enable_message_board: bool
     allow_direct_messages: bool
+    food_type: str | None
+    servings: int
 ```
 `PUT /events/{event_id}` takes the same fields as `EventIn` except `reporter`.
 
@@ -65,6 +67,8 @@ class EventOut:
     image: str
     enable_message_board: bool
     allow_direct_messages: bool
+    food_type: str | None
+    servings: int
 ```
 
 ### Database setup (local development)

@@ -1,5 +1,5 @@
 @url = http://127.0.0.1:8000
-@event_id = 886f9dd0-1425-4d8a-88e7-271640b4440d
+@event_id = a2cdf72b-447e-4638-addc-757f5d64330a
 
 ### List users
 GET {{url}}/users
@@ -40,7 +40,9 @@ Content-Type: application/json
     "tags": ["vegetarian", "pizza", "ice cream"],
     "image": "",
     "enable_message_board": "True",
-    "allow_direct_messages": "True"
+    "allow_direct_messages": "True",
+    "food_type": "Meal",
+    "servings": 3
 }
 
 ### Update an event (replaces name, location, times, description, and tags)

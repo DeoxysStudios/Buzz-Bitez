@@ -59,9 +59,11 @@ class EventUpdate(BaseModel):
     times: list[TimeWindow] = Field(min_length=1)
     description: str | None = None
     tags: list[str] = []
-    image: str = ""
+    image: str | None = None
     enable_message_board: bool = False
     allow_direct_messages: bool = False
+    food_type: str | None = None
+    servings: int = 0
 
     model_config = {"json_schema_extra": {"examples": [{
         "name": "APO pizza night (moved)",
@@ -71,7 +73,9 @@ class EventUpdate(BaseModel):
         "tags": ["pizza"],
         "image": "",
         "enable_message_board": "False",
-        "allow_direct_messages": "True"
+        "allow_direct_messages": "True",
+        "food_type": "Meal",
+        "servings": 3
     }]}}
 
     @field_validator("times")
@@ -104,7 +108,9 @@ class EventIn(EventUpdate):
         "tags": ["pizza", "vegetarian"],
         "image": "",
         "enable_message_board": "False",
-        "allow_direct_messages": "True"
+        "allow_direct_messages": "True",
+        "food_type": "Meal",
+        "servings": 3
     }]}}
 
 
@@ -117,9 +123,11 @@ class EventOut(BaseModel):
     description: str | None
     tags: list[str]
     likes: list[str]
-    image: str
-    enable_message_board: bool = False
-    allow_direct_messages: bool = False
+    image: str | None
+    enable_message_board: bool
+    allow_direct_messages: bool
+    food_type: str | None
+    servings: int
 
     model_config = {"json_schema_extra": {"examples": [{
         "event_id": "0bdda61a-edd9-49de-a4a4-96aaa5b31f09",
@@ -132,7 +140,9 @@ class EventOut(BaseModel):
         "likes": [],
         "image": "",
         "enable_message_board": "False",
-        "allow_direct_messages": "True"
+        "allow_direct_messages": "True",
+        "food_type": "Meal",
+        "servings": 3
     }]}}
 
 

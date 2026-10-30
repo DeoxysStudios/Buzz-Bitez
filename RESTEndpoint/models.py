@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, Text, text, func
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, String, Text, Integer, text, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -32,6 +32,8 @@ class Event(Base):
     image: Mapped[str | None] = mapped_column(Text)
     enable_message_board: Mapped[bool] = mapped_column(default=False, server_default="False")
     allow_direct_messages: Mapped[bool] = mapped_column(default=False, server_default="False")
+    food_type: Mapped[str | None] = mapped_column(Text)
+    servings: Mapped[int] = mapped_column(default=0, server_default="0")
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
