@@ -45,6 +45,9 @@ def _event_to_dict(event: Event) -> dict:
         "description": event.description,
         "tags": [t.tag for t in event.tags],
         "likes": [like.username for like in event.likes],
+        "image": event.image,
+        "enable_message_board": str(event.enable_message_board),
+        "allow_direct_messages": str(event.allow_direct_messages)
     }
 
 
@@ -135,6 +138,9 @@ def create_event(db: Session, data: dict, reporter: str) -> dict:
             for s, e in data["times"]
         ],
         tags=[EventTag(tag=t) for t in dict.fromkeys(data.get("tags", []))],
+        image=data["image"],
+        enable_message_board=data["enable_message_board"] == str(True),
+        allow_direct_messages=data["allow_direct_messages"] == str(True)
     )
     db.add(event)
     try:
@@ -162,6 +168,9 @@ def update_event(db: Session, event_id: uuid.UUID, data: dict) -> dict | None:
             for s, e in data["times"]
         ]
     event.tags = [EventTag(tag=t) for t in dict.fromkeys(data.get("tags", []))]
+    event.image = data["image"]
+    event.enable_message_board = data["enable_message_board"] == str(True)
+    event.allow_direct_messages = data["allow_direct_messages"] == str(True)
 
     db.commit()
     return _event_to_dict(event)

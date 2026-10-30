@@ -29,6 +29,9 @@ class Event(Base):
     reporter: Mapped[str] = mapped_column(ForeignKey("users.username"))
     location: Mapped[str] = mapped_column(String(200))
     description: Mapped[str | None] = mapped_column(Text)
+    image: Mapped[str | None] = mapped_column(Text)
+    enable_message_board: Mapped[bool] = mapped_column(default=False, server_default="False")
+    allow_direct_messages: Mapped[bool] = mapped_column(default=False, server_default="False")
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
