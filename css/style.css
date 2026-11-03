@@ -1469,3 +1469,198 @@ main {
         width: 100%;
     }
 }
+
+
+/* iPhone / Mobile Responsive Fixes */
+@media (max-width: 700px) {
+
+    /* DISCOVER PAGE */
+
+    .discover-hero {
+        padding: 40px 20px;
+    }
+
+    .discover-hero-content {
+        flex-direction: column;
+        gap: 30px;
+        text-align: center;
+    }
+
+    .discover-hero-text,
+    .discover-hero-image {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .discover-hero-text h1 {
+        font-size: clamp(36px, 10vw, 48px);
+        line-height: 1.1;
+    }
+
+    .discover-hero-text p {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .discover-buttons {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .discover-primary-btn,
+    .discover-secondary-btn {
+        text-align: center;
+    }
+
+    .discover-logo-circle {
+        width: min(280px, 80vw);
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    .fresh-alerts-section {
+        padding: 40px 20px;
+    }
+
+    .fresh-alerts-heading {
+        align-items: flex-start;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .fresh-alerts-heading h2 {
+        font-size: 32px;
+    }
+
+    /* ALERTS PAGE */
+
+    .alerts-page {
+        padding: 35px 20px;
+    }
+
+    .alerts-heading-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .alerts-heading-row h1 {
+        font-size: 36px;
+    }
+
+    .alerts-subtitle {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .alerts-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .alerts-search {
+        width: 100%;
+        min-width: 0;
+        flex: auto;
+    }
+
+    .filter-buttons {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .filter-btn {
+        flex: 1 1 auto;
+        padding: 10px 12px;
+    }
+
+    .alerts-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 25px;
+    }
+
+    /* ALERT CARDS - BOTH PAGES */
+
+    .alerts-list {
+        min-width: 0;
+    }
+
+    .alert-card {
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .alert-image {
+        width: 100%;
+        min-width: 0;
+        height: 190px;
+    }
+
+    .alert-content {
+        width: 100%;
+        min-width: 0;
+        padding: 20px;
+        overflow-wrap: anywhere;
+    }
+
+    .alert-content h2 {
+        font-size: 22px;
+    }
+
+    .alert-meta {
+        gap: 10px;
+    }
+
+    .alert-card-footer {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .alerts-sidebar {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* MOBILE NAVIGATION */
+
+    .header-container {
+        padding: 12px 15px;
+        column-gap: 8px;
+    }
+
+    .logo-icon {
+        width: 45px;
+        height: 45px;
+    }
+
+    .logo-text {
+        font-size: 23px;
+    }
+
+    .main-nav {
+        width: 100%;
+        gap: 5px;
+    }
+
+    .nav-link {
+        font-size: 13px;
+    }
+
+    .header-actions {
+        gap: 8px;
+    }
+
+    .notification-button,
+    .profile-button {
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+    }
+
+    .bell-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
