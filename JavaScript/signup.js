@@ -238,21 +238,25 @@
         username: username,
         email: values.email,
         password: password,
+        full_name: values.full_name
       };
-      user = await fetch(SERVER_USERS_URL, {
+      const response = await fetch(SERVER_USERS_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(data)
       });
+      if (!response.ok)
+        throw new Error(`Error posting new user with username ${username}. Status ${response.status}`)
+      user = await response.json();
     } else {
       const response = await fetch(`${SERVER_LOGIN_URL}/${username}/${password}`);
       if (!response.ok)
-        throw new Error(`Error fetching user with name ${username}. Status: ${response.status}`);
+        throw new Error(`Error fetching user with username ${username}. Status: ${response.status}`);
       user = await response.json();
     }
-    try { (remember ? localStorage : sessionStorage).setItem("bb-user", user); } catch {}
+    try { (remember ? localStorage : sessionStorage).setItem("bb-user", JSON.stringify(user)); } catch {}
     form.querySelector(".su-submit").textContent = mode === "signup" ? "Account created" : "Logged in";
     setTimeout(() => {
       if (embedded) render(document.getElementById("signup-root"));   // swap form for welcome card

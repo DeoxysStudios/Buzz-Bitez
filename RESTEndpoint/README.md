@@ -40,6 +40,11 @@ class EventIn:
     times: list[list[str]]  # [["start", "end"], ...] ISO 8601 with timezone, e.g. "2026-10-03T12:00:00-04:00"
     description: str | None
     tags: list[str]    # duplicates are removed
+    image: str         # The data url of the image
+    enable_message_board: bool
+    allow_direct_messages: bool
+    food_type: str | None
+    servings: int
 ```
 `PUT /events/{event_id}` takes the same fields as `EventIn` except `reporter`.
 
@@ -59,6 +64,11 @@ class EventOut:
     description: str | None
     tags: list[str]
     likes: list[str]   # usernames
+    image: str
+    enable_message_board: bool
+    allow_direct_messages: bool
+    food_type: str | None
+    servings: int
 ```
 
 ### Database setup (local development)

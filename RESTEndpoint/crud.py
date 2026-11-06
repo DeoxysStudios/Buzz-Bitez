@@ -45,6 +45,11 @@ def _event_to_dict(event: Event) -> dict:
         "description": event.description,
         "tags": [t.tag for t in event.tags],
         "likes": [like.username for like in event.likes],
+        "image": event.image,
+        "enable_message_board": str(event.enable_message_board),
+        "allow_direct_messages": str(event.allow_direct_messages),
+        "food_type": event.food_type,
+        "servings": event.servings
     }
 
 
@@ -135,6 +140,11 @@ def create_event(db: Session, data: dict, reporter: str) -> dict:
             for s, e in data["times"]
         ],
         tags=[EventTag(tag=t) for t in dict.fromkeys(data.get("tags", []))],
+        image=data["image"],
+        enable_message_board=data["enable_message_board"] == str(True),
+        allow_direct_messages=data["allow_direct_messages"] == str(True),
+        food_type=data["food_type"],
+        servings=data["servings"]
     )
     db.add(event)
     try:
@@ -162,6 +172,11 @@ def update_event(db: Session, event_id: uuid.UUID, data: dict) -> dict | None:
             for s, e in data["times"]
         ]
     event.tags = [EventTag(tag=t) for t in dict.fromkeys(data.get("tags", []))]
+    event.image = data["image"]
+    event.enable_message_board = data["enable_message_board"] == str(True)
+    event.allow_direct_messages = data["allow_direct_messages"] == str(True)
+    event.food_type = data["food_type"]
+    event.servings = data["servings"]
 
     db.commit()
     return _event_to_dict(event)

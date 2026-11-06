@@ -1,3 +1,6 @@
+const SERVER_BASE_URL = "http://127.0.0.1:8000"; // TODO: Replace this url when we have an actual server
+const SERVER_EVENTS_URL = SERVER_BASE_URL + "/events";
+
 // using localStorage to save the event data for testing purposes
 
 // Get references to the form and its input fields
@@ -25,6 +28,12 @@ function setMinimumDateTime() {
     startTimeInput.min = currentDateTime;
     endTimeInput.min = currentDateTime;
 }
+
+// Get the logged in user
+const getUser = () => {
+    try { return JSON.parse(localStorage.getItem("bb-user") || sessionStorage.getItem("bb-user")); }
+    catch { return null; }
+};
 
 // Call the function to set the minimum date and time when the page loads
 setMinimumDateTime();
@@ -78,10 +87,12 @@ broadcastForm.addEventListener("submit", async function(event) {
     }
 
     const startDateTime =
-        `${eventDateInput.value}T${startTimeInput.value}`;
+        `${eventDateInput.value}T${startTimeInput.value}` + getLocalOffsetString();
 
     const endDateTime =
-        `${eventDateInput.value}T${endTimeInput.value}`;
+        `${eventDateInput.value}T${endTimeInput.value}` + getLocalOffsetString();
+
+    const user = getUser();
 
     const newEvent = {
         tags: [
@@ -92,7 +103,7 @@ broadcastForm.addEventListener("submit", async function(event) {
             document.getElementById("event-title").value,
 
         reporter:
-            "Current User",
+            user['username'],
 
         description:
             document.getElementById("description").value,
@@ -118,6 +129,45 @@ broadcastForm.addEventListener("submit", async function(event) {
         likes: []
     };
 
+    const data = {
+        tags: [
+            document.getElementById("food-type").value
+        ],
+
+        name:
+            document.getElementById("event-title").value,
+
+        reporter:
+            user['username'],
+
+        description:
+            document.getElementById("description").value,
+
+        location:
+            document.getElementById("location").value,
+
+        servings:
+            Number(document.getElementById("servings").value),
+
+        times: [ [startDateTime, endDateTime] ],
+
+        image: foodPhoto,
+
+        messageBoard:
+            document.getElementById("message-board").checked,
+
+        directMessages:
+            document.getElementById("direct-messages").checked,
+    };
+
+    await fetch(SERVER_EVENTS_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
     saveTestEvent(newEvent);
 
     broadcastStatus.textContent =
@@ -125,3 +175,17 @@ broadcastForm.addEventListener("submit", async function(event) {
 
     broadcastForm.reset();
 });
+
+
+
+// Written by Gemini https://share.gemini.google/YLmtfugMpKK8
+function getLocalOffsetString(date = new Date()) {
+    const offsetMinutes = -date.getTimezoneOffset();
+    const sign = offsetMinutes >= 0 ? '+' : '-';
+    const absMinutes = Math.abs(offsetMinutes);
+
+    const hours = String(Math.floor(absMinutes / 60)).padStart(2, '0');
+    const minutes = String(absMinutes % 60).padStart(2, '0');
+
+    return `${sign}${hours}:${minutes}`;
+}
