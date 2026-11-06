@@ -89,6 +89,12 @@ def get_user(db: Session, username: str) -> dict | None:
     return _user_to_dict(user) if user else None
 
 
+def get_password_hash(db: Session, username: str) -> str | None:
+    user = db.get(User, username)
+    if user != None:
+        return user.password_hash
+    return None
+
 def delete_user(db: Session, username: str) -> bool:
     # True if deleted, False if no such user.
     # Raises UserHasEvents if they reported events (the foreign key blocks it).
