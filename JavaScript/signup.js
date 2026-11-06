@@ -238,7 +238,7 @@
         username: username,
         email: values.email,
         password: password,
-        full_name: values.full_name
+        full_name: values.name
       };
       const response = await fetch(SERVER_USERS_URL, {
         method: "POST",

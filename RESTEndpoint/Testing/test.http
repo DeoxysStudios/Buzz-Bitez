@@ -39,8 +39,8 @@ Content-Type: application/json
     "description": "I dunno anything about this event, but pretend that I do and put the info here.",
     "tags": ["vegetarian", "pizza", "ice cream"],
     "image": "",
-    "enable_message_board": "True",
-    "allow_direct_messages": "True",
+    "enable_message_board": true,
+    "allow_direct_messages": true,
     "food_type": "Meal",
     "servings": 3
 }
