@@ -238,6 +238,7 @@
         username: username,
         email: values.email,
         password: password,
+        full_name: values.full_name
       };
       const response = await fetch(SERVER_USERS_URL, {
         method: "POST",
@@ -246,11 +247,13 @@
         },
         body: JSON.stringify(data)
       });
+      if (!response.ok)
+        throw new Error(`Error posting new user with username ${username}. Status ${response.status}`)
       user = await response.json();
     } else {
       const response = await fetch(`${SERVER_LOGIN_URL}/${username}/${password}`);
       if (!response.ok)
-        throw new Error(`Error fetching user with name ${username}. Status: ${response.status}`);
+        throw new Error(`Error fetching user with username ${username}. Status: ${response.status}`);
       user = await response.json();
     }
     try { (remember ? localStorage : sessionStorage).setItem("bb-user", JSON.stringify(user)); } catch {}
