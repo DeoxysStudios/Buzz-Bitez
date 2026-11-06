@@ -1,3 +1,6 @@
+const SERVER_BASE_URL = "http://127.0.0.1:8000"; // TODO: Replace this url when we have an actual server
+const SERVER_EVENTS_URL = SERVER_BASE_URL + "/events";
+
 const alertsList = document.getElementById("alerts-list");
 
 const discoverAlertsList = document.getElementById("discover-alerts-list");
@@ -91,8 +94,8 @@ function formatEventTime(startTime, endTime) {
 // Function to determine the status label based on the event's start time
 function getStatusLabel(event) {
 
-    const start = new Date(event.startTime);
-    const end = new Date(event.endTime);
+    const start = new Date(event.times[0][0]);
+    const end = new Date(event.times[0][1]);
     const now = new Date();
 
     // Event is currently active
@@ -135,15 +138,16 @@ function getStatusLabel(event) {
 
 async function loadEvents() {
     try {
-        const response = await fetch("http://127.0.0.1:8000/event"); // Replace with actual API endpoint
+        const response = await fetch(SERVER_EVENTS_URL);
 
         if (!response.ok) {
             throw new Error("Failed to load events");
         }
 
         const events = await response.json();
+        console.log(events)
 
-        displayEvents(events);
+        displayEvents(events, alertsList);
 
     } catch (error) {
         console.error("Error loading events:", error);
@@ -160,7 +164,7 @@ function displayEvents(events, container) {
         const card = document.createElement("article");
         const eventTypeClass = getEventTypeClass(event);
         const eventIcon = getEventIcon(event);
-        const formattedTime = formatEventTime(event.startTime, event.endTime);
+        const formattedTime = formatEventTime(event.times[0][0], event.times[0][1]);
         const statusLabel = getStatusLabel(event);
 
         card.classList.add("alert-card");
@@ -174,9 +178,9 @@ function displayEvents(events, container) {
                 </div>
 
                 ${
-                    event.foodPhoto
+                    event.image
                         ? `<img
-                            src="${event.foodPhoto}"
+                            src="${event.image}"
                             alt="${event.name}"
                             class="alert-food-photo"
                         >`
@@ -260,4 +264,4 @@ function loadLocalEvents() {
 
 
 
-loadLocalEvents(); //change this to loadEvents() when the backend is ready
+loadEvents();
