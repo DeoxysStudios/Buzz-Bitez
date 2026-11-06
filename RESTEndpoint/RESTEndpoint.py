@@ -72,8 +72,8 @@ class EventUpdate(BaseModel):
         "description": "Moved upstairs.",
         "tags": ["pizza"],
         "image": "",
-        "enable_message_board": "False",
-        "allow_direct_messages": "True",
+        "enable_message_board": False,
+        "allow_direct_messages": True,
         "food_type": "Meal",
         "servings": 3
     }]}}
@@ -107,8 +107,8 @@ class EventIn(EventUpdate):
         "description": "Free pizza in the lobby.",
         "tags": ["pizza", "vegetarian"],
         "image": "",
-        "enable_message_board": "False",
-        "allow_direct_messages": "True",
+        "enable_message_board": False,
+        "allow_direct_messages": True,
         "food_type": "Meal",
         "servings": 3
     }]}}
@@ -139,8 +139,8 @@ class EventOut(BaseModel):
         "tags": ["pizza", "vegetarian"],
         "likes": [],
         "image": "",
-        "enable_message_board": "False",
-        "allow_direct_messages": "True",
+        "enable_message_board": False,
+        "allow_direct_messages": True,
         "food_type": "Meal",
         "servings": 3
     }]}}
