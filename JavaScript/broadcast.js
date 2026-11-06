@@ -1,8 +1,6 @@
 const SERVER_BASE_URL = "http://127.0.0.1:8000"; // TODO: Replace this url when we have an actual server
 const SERVER_EVENTS_URL = SERVER_BASE_URL + "/events";
 
-// using localStorage to save the event data for testing purposes
-
 // Get references to the form and its input fields
 const startTimeInput = document.getElementById("start-time");
 const endTimeInput = document.getElementById("end-time");
@@ -50,13 +48,6 @@ startTimeInput.addEventListener("change", function() {
     }
 });
 
-// Function to save the new event to localStorage
-function saveTestEvent(newEvent) {
-    let savedEvents =JSON.parse(localStorage.getItem("buzzBitezEvents")) || [];
-    savedEvents.push(newEvent);
-    localStorage.setItem("buzzBitezEvents", JSON.stringify(savedEvents));
-}
-
 // Function to read the image file and return a data URL
 function readImageFile(file) {
     return new Promise(function(resolve, reject) {
@@ -94,41 +85,6 @@ broadcastForm.addEventListener("submit", async function(event) {
 
     const user = getUser();
 
-    const newEvent = {
-        tags: [
-            document.getElementById("food-type").value
-        ],
-
-        name:
-            document.getElementById("event-title").value,
-
-        reporter:
-            user['username'],
-
-        description:
-            document.getElementById("description").value,
-
-        location:
-            document.getElementById("location").value,
-
-        servings:
-            Number(document.getElementById("servings").value),
-
-        startTime: startDateTime,
-
-        endTime: endDateTime,
-
-        foodPhoto: foodPhoto,
-
-        messageBoard:
-            document.getElementById("message-board").checked,
-
-        directMessages:
-            document.getElementById("direct-messages").checked,
-
-        likes: []
-    };
-
     const data = {
         tags: [
             document.getElementById("food-type").value
@@ -160,7 +116,7 @@ broadcastForm.addEventListener("submit", async function(event) {
             document.getElementById("direct-messages").checked,
     };
 
-    await fetch(SERVER_EVENTS_URL, {
+    const response = await fetch(SERVER_EVENTS_URL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -168,7 +124,8 @@ broadcastForm.addEventListener("submit", async function(event) {
         body: JSON.stringify(data)
     });
 
-    saveTestEvent(newEvent);
+    if (!response.ok)
+        throw Error(`Failed to upload new event. Status: ${response.status}`);
 
     broadcastStatus.textContent =
         "Food alert broadcast successfully!";
