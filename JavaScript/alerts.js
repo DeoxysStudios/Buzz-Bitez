@@ -145,7 +145,6 @@ async function loadEvents() {
         }
 
         const events = await response.json();
-        console.log(events)
 
         displayEvents(events, alertsList);
 
@@ -232,36 +231,5 @@ function displayEvents(events, container) {
         container.appendChild(card);
     });
 }
-
-function loadLocalEvents() {
-
-    const savedEvents =
-        JSON.parse(localStorage.getItem("buzzBitezEvents")) || [];
-
-    // Soonest events first
-    savedEvents.sort(function(a, b) {
-        return new Date(a.startTime) - new Date(b.startTime);
-    });
-
-
-    // Alerts page: show every event
-    if (alertsList) {
-        displayEvents(savedEvents, alertsList);
-    }
-
-
-    // Discover page: only show first 3
-    if (discoverAlertsList) {
-
-        const freshEvents = savedEvents.slice(0, 3);
-
-        displayEvents(
-            freshEvents,
-            discoverAlertsList
-        );
-    }
-}
-
-
 
 loadEvents();
