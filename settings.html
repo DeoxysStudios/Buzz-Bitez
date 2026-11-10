@@ -6,6 +6,7 @@
     <meta name="mobile-web-app-capable" content="yes"/>
     <title>Buzz Bitez</title>
     <script src="JavaScript/navigation.js" defer></script>
+    <script src="JavaScript/allergens.js" defer></script>
     <script src="JavaScript/settings.js" defer></script>
     <link rel="manifest" href="manifest.json"/>
     <link rel="stylesheet" href="css/style.css">
@@ -188,9 +189,29 @@
                         <div>
                             <p class="settings-label">Distance</p>
                             <p class="settings-value">... <!-- placeholder: distance from me --></p>
+
                         </div>
+
                     </div>
                 </div>
+
+                <div class="settings-card">
+                    <h3>Allergens</h3>
+                    <p class="settings-value">
+                        Select anything you're allergic to. Alerts that list
+                        these allergens will be hidden from your Alerts page.
+                    </p>
+
+                    <div
+                        class="allergen-options settings-allergens"
+                        id="user-allergen-options"
+                        role="group"
+                        aria-label="Your allergens"
+                    ></div>
+
+                    <p class="settings-value allergen-save-status" id="allergen-save-status" aria-live="polite"></p>
+                </div>
+                
             </section>
 
 

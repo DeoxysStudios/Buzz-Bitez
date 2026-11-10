@@ -8,6 +8,7 @@ const broadcastForm = document.getElementById("broadcast-form");
 const broadcastStatus = document.getElementById("broadcast-status");
 const eventDateInput = document.getElementById("event-date");
 const foodPhotoInput = document.getElementById("food-photo");
+const allergenOptions = document.getElementById("allergen-options");
 
 
 // Set the minimum date and time for the start and end time inputs to the current date and time
@@ -35,6 +36,23 @@ const getUser = () => {
 
 // Call the function to set the minimum date and time when the page loads
 setMinimumDateTime();
+
+function renderAllergenOptions() {
+    allergenOptions.innerHTML = ALLERGENS.map(allergen => `
+        <label class="allergen-chip">
+            <input type="checkbox" name="allergens" value="${allergen.id}">
+            <span>${allergen.label}</span>
+        </label>
+    `).join("");
+}
+
+renderAllergenOptions();
+
+function getSelectedAllergenTags() {
+    return Array.from(
+        allergenOptions.querySelectorAll('input[name="allergens"]:checked')
+    ).map(input => allergenToTag(input.value));
+}
 
 startTimeInput.addEventListener("change", function() {
 
@@ -86,8 +104,9 @@ broadcastForm.addEventListener("submit", async function(event) {
     const user = getUser();
 
     const data = {
-        tags: [
-            document.getElementById("food-type").value
+         tags: [
+            document.getElementById("food-type").value,
+            ...getSelectedAllergenTags()
         ],
 
         name:

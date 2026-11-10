@@ -6,6 +6,7 @@
     <meta name="mobile-web-app-capable" content="yes"/>
     <title>Buzz Bitez</title>
     <script src="JavaScript/navigation.js" defer></script>
+    <script src="JavaScript/allergens.js" defer></script>
     <script src="JavaScript/alerts.js" defer></script>
     <link rel="manifest" href="manifest.json"/>
     <link rel="stylesheet" href="css/style.css">
@@ -92,6 +93,15 @@
 
     </section>
 
+    <section class="alerts-allergen-filter" aria-labelledby="allergen-filter-heading">
+        <p class="allergen-filter-heading" id="allergen-filter-heading">
+            Hide alerts containing
+        </p>
+
+        <div class="allergen-options" id="alert-allergen-filter"></div>
+
+        <p class="allergen-hidden-note" id="allergen-hidden-note" hidden></p>
+    </section>
 
     <section class="alerts-layout">
         

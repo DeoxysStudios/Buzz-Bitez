@@ -52,5 +52,35 @@ document.addEventListener("DOMContentLoaded", () => {
         action.addEventListener("click", event => event.preventDefault());
     });
 
+    const userAllergenOptions = document.getElementById("user-allergen-options");
+    const allergenSaveStatus = document.getElementById("allergen-save-status");
+
+    if (userAllergenOptions) {
+        const savedAllergens = loadUserAllergens();
+
+        userAllergenOptions.innerHTML = ALLERGENS.map(allergen => `
+            <label class="allergen-chip">
+                <input
+                    type="checkbox"
+                    value="${allergen.id}"
+                    ${savedAllergens.includes(allergen.id) ? "checked" : ""}
+                >
+                <span>${allergen.label}</span>
+            </label>
+        `).join("");
+
+        userAllergenOptions.addEventListener("change", () => {
+            const selected = Array.from(
+                userAllergenOptions.querySelectorAll("input:checked")
+            ).map(input => input.value);
+
+            saveUserAllergens(selected);
+
+            if (allergenSaveStatus) {
+                allergenSaveStatus.textContent = "Saved.";
+            }
+        });
+    }
+
     showSection(window.location.hash.replace("#", ""));
 });
