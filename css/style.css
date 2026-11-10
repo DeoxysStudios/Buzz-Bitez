@@ -928,6 +928,20 @@ main {
     outline-offset: 2px;
 }
 
+.settings-allergens {
+    margin-top: 14px;
+    padding-top: 14px;
+
+    border-top: 1px solid #edf0f2;
+}
+
+.allergen-save-status {
+    min-height: 1.2em;
+    margin-top: 10px;
+
+    color: #24834a;
+}
+
 @media (max-width: 800px) {
 
     .settings-page {
@@ -938,6 +952,8 @@ main {
         grid-template-columns: 1fr;
     }
 }
+
+
 
 /* -------------------------
    Footer
