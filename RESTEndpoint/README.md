@@ -15,10 +15,11 @@ Interactive docs for every endpoint (try requests straight from the browser): ht
 | GET | `/users/{username}` | Get one user | 404 |
 | POST | `/users` | Create a user (201) | 409 username or email taken, 422 invalid input |
 | DELETE | `/users/{username}` | Delete a user (204) | 404, 409 if they still have reported events |
+| GET | `/login/{username}/{password}` | Check a username and password; returns the user | 404 unknown user, 401 wrong password |
 | GET | `/events` | List events, newest first | |
 | GET | `/events/{event_id}` | Get one event | 404, 422 malformed id |
 | POST | `/events` | Create an event (201) | 422 invalid input or unknown reporter |
-| PUT | `/events/{event_id}` | Replace an event's name, location, times, description, tags | 404, 422 |
+| PUT | `/events/{event_id}` | Replace every field of an event except `reporter` | 404, 422 |
 | DELETE | `/events/{event_id}` | Delete an event and its times, tags, likes (204) | 404 |
 | POST | `/events/{event_id}/likes` | Like an event; body `{"username": ...}` (204, liking twice is fine) | 404 event, 422 unknown user |
 | DELETE | `/events/{event_id}/likes/{username}` | Remove a like (204) | |
@@ -31,6 +32,7 @@ What you send:
 class UserIn:
     username: str      # unique, 1-50 characters
     email: str         # valid email, unique
+    full_name: str     # 1-100 characters, required
     password: str      # at least 8 characters
 
 class EventIn:
@@ -38,21 +40,24 @@ class EventIn:
     reporter: str      # username of an existing user (will come from login later)
     location: str      # 1-200 characters
     times: list[list[str]]  # [["start", "end"], ...] ISO 8601 with timezone, e.g. "2026-10-03T12:00:00-04:00"
-    description: str | None
-    tags: list[str]    # duplicates are removed
-    image: str         # The data url of the image
-    enable_message_board: bool
-    allow_direct_messages: bool
-    food_type: str | None
-    servings: int
+    description: str | None      # optional
+    tags: list[str]              # optional, 1-50 characters each, duplicates are removed
+    image: str | None            # optional, the data url of the image
+    enable_message_board: bool   # optional, default False
+    allow_direct_messages: bool  # optional, default False
+    food_type: str | None        # optional
+    servings: int                # optional, default 0
 ```
 `PUT /events/{event_id}` takes the same fields as `EventIn` except `reporter`.
+
+**Allergen tags:** allergens are stored in `tags` with an `allergen:` prefix, e.g. `"allergen:gluten"`. The valid ids are listed in `JavaScript/allergens.js`. An event with no allergen tags means the reporter didn't list any, not that the food is allergen-free.
 
 What you get back:
 ```py
 class UserOut:
     username: str
     email: str
+    full_name: str
     banned_until: str | None
 
 class EventOut:
@@ -64,7 +69,7 @@ class EventOut:
     description: str | None
     tags: list[str]
     likes: list[str]   # usernames
-    image: str
+    image: str | None
     enable_message_board: bool
     allow_direct_messages: bool
     food_type: str | None
