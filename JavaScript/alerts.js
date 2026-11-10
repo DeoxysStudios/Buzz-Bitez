@@ -5,6 +5,12 @@ const alertsList = document.getElementById("alerts-list");
 
 const discoverAlertsList = document.getElementById("discover-alerts-list");
 
+const allergenFilterContainer = document.getElementById("alert-allergen-filter");
+const allergenHiddenNote = document.getElementById("allergen-hidden-note");
+
+let allEvents = [];
+const pageHiddenAllergens = new Set();
+
 // Function to determine the CSS class based on the event's first tag
 function getEventTypeClass(event) {
     const firstTag = event.tags[0];
@@ -136,6 +142,108 @@ function getStatusLabel(event) {
     });
 }
 
+function eventHasAnyAllergen(event, allergenIds) {
+    return getEventAllergens(event).some(id => allergenIds.includes(id));
+}
+
+function updateHiddenNote(hiddenCount) {
+    if (!allergenHiddenNote) return;
+
+    if (hiddenCount === 0) {
+        allergenHiddenNote.hidden = true;
+        return;
+    }
+
+    const noun = hiddenCount === 1 ? "alert is" : "alerts are";
+    allergenHiddenNote.innerHTML =
+        `${hiddenCount} ${noun} hidden because of the allergens in your settings. ` +
+        `<a href="settings.html#alert-settings">Manage allergens</a>`;
+    allergenHiddenNote.hidden = false;
+}
+
+function renderAlerts() {
+    if (!alertsList) return;
+
+    const userAllergens = loadUserAllergens();
+    const pageAllergens = Array.from(pageHiddenAllergens);
+
+    const safeForUser = allEvents.filter(
+        event => !eventHasAnyAllergen(event, userAllergens)
+    );
+    const visibleEvents = safeForUser.filter(
+        event => !eventHasAnyAllergen(event, pageAllergens)
+    );
+
+    allEvents = events;
+    renderAlerts();
+
+    updateHiddenNote(allEvents.length - safeForUser.length);
+
+    if (visibleEvents.length === 0 && allEvents.length > 0) {
+        alertsList.innerHTML =
+            `<p class="alerts-empty">No alerts match your allergen filters right now.</p>`;
+    }
+}
+
+function renderAllergenFilter() {
+    if (!allergenFilterContainer) return;
+
+    const userAllergens = loadUserAllergens();
+
+    allergenFilterContainer.innerHTML = ALLERGENS.map(allergen => {
+        const fromSettings = userAllergens.includes(allergen.id);
+        const checked = fromSettings || pageHiddenAllergens.has(allergen.id);
+
+        return `
+            <label
+                class="allergen-chip${fromSettings ? " is-locked" : ""}"
+                ${fromSettings ? 'title="Hidden by your allergen settings"' : ""}
+            >
+                <input
+                    type="checkbox"
+                    value="${allergen.id}"
+                    ${checked ? "checked" : ""}
+                    ${fromSettings ? "disabled" : ""}
+                >
+                <span>${allergen.label}</span>
+            </label>
+        `;
+    }).join("");
+}
+
+function refreshAllergenViews() {
+    renderAllergenFilter();
+    renderAlerts();
+}
+
+if (allergenFilterContainer) {
+    allergenFilterContainer.addEventListener("change", event => {
+        const input = event.target;
+
+        if (input.checked) {
+            pageHiddenAllergens.add(input.value);
+        } else {
+            pageHiddenAllergens.delete(input.value);
+        }
+
+        renderAlerts();
+    });
+
+    window.addEventListener("storage", event => {
+        if (event.key === ALLERGEN_STORAGE_KEY) {
+            refreshAllergenViews();
+        }
+    });
+
+    window.addEventListener("pageshow", event => {
+        if (event.persisted) {
+            refreshAllergenViews();
+        }
+    });
+
+    renderAllergenFilter();
+}
+
 async function loadEvents() {
     try {
         const response = await fetch(SERVER_EVENTS_URL);
@@ -152,7 +260,6 @@ async function loadEvents() {
         console.error("Error loading events:", error);
     }
 }
-
 
 function displayEvents(events, container) {
 
