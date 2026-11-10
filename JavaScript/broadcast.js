@@ -105,14 +105,17 @@ broadcastForm.addEventListener("submit", async function(event) {
         servings:
             Number(document.getElementById("servings").value),
 
+        food_type:
+            document.getElementById("food-type").value,
+
         times: [ [startDateTime, endDateTime] ],
 
         image: foodPhoto,
 
-        messageBoard:
+        enable_message_board:
             document.getElementById("message-board").checked,
 
-        directMessages:
+        allow_direct_messages:
             document.getElementById("direct-messages").checked,
     };
 
