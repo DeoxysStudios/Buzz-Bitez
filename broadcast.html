@@ -6,6 +6,7 @@
     <meta name="mobile-web-app-capable" content="yes"/>
     <title>Buzz Bitez</title>
     <script src="JavaScript/navigation.js" defer></script>
+    <script src="JavaScript/allergens.js" defer></script>
     <script src="JavaScript/broadcast.js" defer></script>
     <link rel="manifest" href="manifest.json"/>
     <link rel="stylesheet" href="css/style.css">
@@ -138,6 +139,16 @@
                     placeholder="Tell students what's available and any dietary details..."
                     required
                 ></textarea>
+
+                <fieldset class="allergen-fieldset">
+                    <legend>Allergens</legend>
+
+                    <p class="allergen-hint">
+                        Please check off any known allergens this food may contain.
+                    </p>
+
+                    <div class="allergen-options" id="allergen-options"></div>
+                </fieldset>
 
                 <label for="food-photo">
                     Food photo
