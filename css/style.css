@@ -580,6 +580,55 @@ main {
     text-decoration: underline;
 }
 
+/* Allergen filter bar */
+
+.alerts-allergen-filter {
+    max-width: 1200px;
+    margin: 0 auto 30px auto;
+
+    background: white;
+
+    border: 1px solid #e2e8eb;
+    border-radius: 14px;
+
+    padding: 16px;
+}
+
+.allergen-filter-heading {
+    color: #111;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    margin-bottom: 10px;
+}
+
+.allergen-hidden-note {
+    margin-top: 12px;
+
+    color: #5f6b72;
+    font-size: 14px;
+}
+
+.allergen-hidden-note a {
+    color: #d10000;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.allergen-hidden-note a:hover {
+    text-decoration: underline;
+}
+
+.allergen-chip.is-locked,
+.allergen-chip.is-locked input {
+    cursor: not-allowed;
+}
+
+.allergen-chip.is-locked {
+    opacity: 0.75;
+}
+
 
 /* =========================
    SIDEBAR
@@ -680,6 +729,51 @@ main {
     grid-template-columns: 260px 1fr;
     gap: 25px;
     align-items: start;
+}
+
+/* Allergen badges on cards */
+
+.alert-allergens {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+
+    margin-bottom: 18px;
+
+    font-size: 13px;
+}
+
+.alert-allergens-label {
+    color: #5f6b72;
+    font-weight: bold;
+    margin-right: 2px;
+}
+
+.allergen-badge {
+    background-color: #fdecec;
+    color: #a30000;
+
+    padding: 4px 10px;
+    border-radius: 999px;
+
+    font-weight: 600;
+}
+
+.alert-allergens.is-empty {
+    color: #7a858b;
+}
+
+.alerts-empty {
+    background: white;
+
+    border: 1px dashed #cfdadd;
+    border-radius: 16px;
+
+    padding: 40px 24px;
+
+    text-align: center;
+    color: #5f6b72;
 }
 
 
