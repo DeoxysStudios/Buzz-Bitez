@@ -63,7 +63,7 @@ class EventUpdate(BaseModel):
     enable_message_board: bool = False
     allow_direct_messages: bool = False
     food_type: str | None = None
-    servings: int = 0
+    servings: int = Field(default=0, ge=0, le=10000)
 
     model_config = {"json_schema_extra": {"examples": [{
         "name": "APO pizza night (moved)",
