@@ -50,6 +50,10 @@ class UserOut(BaseModel):
     banned_until: str | None = None
 
 
+class UserPublic(BaseModel):
+    # What anyone can see about any user. Email and full name stay private.
+    username: str
+
 TimeWindow = tuple[AwareDatetime, AwareDatetime]  # [start, end], timezone required
 
 
@@ -155,12 +159,12 @@ class LikeIn(BaseModel):
 
 # ---------- users ----------
 
-@app.get("/users", response_model=list[UserOut])
+@app.get("/users", response_model=list[UserPublic])
 def list_users(db: DB):
     return crud.list_users(db)
 
 
-@app.get("/users/{username}", response_model=UserOut, responses=NOT_FOUND)
+@app.get("/users/{username}", response_model=UserPublic, responses=NOT_FOUND)
 def get_user(username: str, db: DB):
     user = crud.get_user(db, username)
     if user is None:
