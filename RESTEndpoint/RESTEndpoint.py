@@ -178,8 +178,11 @@ def create_user(user: UserIn, db: DB):
         raise HTTPException(409, f"Email {user.email} is already registered.")
 
 
-@app.delete("/users/{username}", status_code=204, responses=NOT_FOUND | CONFLICT)
-def delete_user(username: str, db: DB):
+@app.delete("/users/{username}/{password}", status_code=204, responses=NOT_FOUND | CONFLICT)
+def delete_user(username: str, password: str, db: DB):
+    stored_hash = crud.get_password_hash(db, username)
+    if not password_hash.verify(password, stored_hash):
+        raise HTTPException(401, "Invalid password.")
     try:
         deleted = crud.delete_user(db, username)
     except crud.UserHasEvents:
@@ -223,8 +226,15 @@ def update_event(event_id: uuid.UUID, event: EventUpdate, db: DB):
     return updated
 
 
-@app.delete("/events/{event_id}", status_code=204, responses=NOT_FOUND)
-def delete_event(event_id: uuid.UUID, db: DB):
+@app.delete("/events/{event_id}/{password}", status_code=204, responses=NOT_FOUND)
+def delete_event(event_id: uuid.UUID, password: str, db: DB):
+    event = crud.get_event(db, event_id)
+    if event is None:
+        raise HTTPException(404, f"No event with event_id {event_id} found.")
+    reporter = event["reporter"]
+    stored_hash = crud.get_password_hash(db, reporter)
+    if not password_hash.verify(password, stored_hash):
+        raise HTTPException(401, "Invalid password.")
     if not crud.delete_event(db, event_id):
         raise HTTPException(404, f"No event with event_id {event_id} found.")
     return Response(status_code=204)
