@@ -57,13 +57,17 @@ class UserPublic(BaseModel):
 TimeWindow = tuple[AwareDatetime, AwareDatetime]  # [start, end], timezone required
 
 
+# Optional photo as a base64 data URL.
+IMAGE_PATTERN = r"^(data:image/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+)?$"
+
+
 class EventUpdate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     location: str = Field(min_length=1, max_length=200)
     times: list[TimeWindow] = Field(min_length=1, max_length=10)
     description: str | None = Field(default=None, max_length=2000)
     tags: list[str] = Field(default=[], max_length=20)
-    image: str | None = None
+    image: str | None = Field(default=None, max_length=7_000_000, pattern=IMAGE_PATTERN)
     enable_message_board: bool = False
     allow_direct_messages: bool = False
     food_type: str | None = Field(default=None, max_length=50)
