@@ -60,13 +60,13 @@ TimeWindow = tuple[AwareDatetime, AwareDatetime]  # [start, end], timezone requi
 class EventUpdate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     location: str = Field(min_length=1, max_length=200)
-    times: list[TimeWindow] = Field(min_length=1)
-    description: str | None = None
-    tags: list[str] = []
+    times: list[TimeWindow] = Field(min_length=1, max_length=10)
+    description: str | None = Field(default=None, max_length=2000)
+    tags: list[str] = Field(default=[], max_length=20)
     image: str | None = None
     enable_message_board: bool = False
     allow_direct_messages: bool = False
-    food_type: str | None = None
+    food_type: str | None = Field(default=None, max_length=50)
     servings: int = Field(default=0, ge=0, le=10000)
 
     model_config = {"json_schema_extra": {"examples": [{
