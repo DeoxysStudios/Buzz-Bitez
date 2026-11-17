@@ -5,11 +5,24 @@ from fastapi import Depends, FastAPI, HTTPException, Response
 from pwdlib import PasswordHash
 from pydantic import AwareDatetime, BaseModel, EmailStr, Field, field_validator
 from sqlalchemy.orm import Session
+from fastapi.middleware.cors import CORSMiddleware
 
 import crud
 from db import get_db
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Content-Type"],
+)
+
 password_hash = PasswordHash.recommended()
 
 # Every endpoint that declares `db: DB` gets its own database session,

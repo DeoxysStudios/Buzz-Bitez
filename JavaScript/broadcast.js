@@ -102,6 +102,11 @@ broadcastForm.addEventListener("submit", async function(event) {
         `${eventDateInput.value}T${endTimeInput.value}` + getLocalOffsetString();
 
     const user = getUser();
+    if (!user || !user.username) {
+        broadcastStatus.textContent =
+            "Please log in before broadcasting a food alert.";
+        return;
+    }
 
     const data = {
          tags: [
