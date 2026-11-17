@@ -1,5 +1,5 @@
 @url = http://127.0.0.1:8000
-@event_id = a2cdf72b-447e-4638-addc-757f5d64330a
+@event_id = aae385f7-3080-4c92-bb76-1ab593295360
 
 ### List users
 GET {{url}}/users
@@ -19,7 +19,7 @@ Content-Type: application/json
 }
 
 ### Delete a user (409 if they still have reported events)
-DELETE {{url}}/users/test_user
+DELETE {{url}}/users/test_user/password123
 
 ### List events (newest first)
 GET {{url}}/events
@@ -58,7 +58,7 @@ Content-Type: application/json
 }
 
 ### Delete an event (its times, tags, and likes go with it)
-DELETE {{url}}/events/{{event_id}}
+DELETE {{url}}/events/{{event_id}}/password123
 
 ### Like an event (liking twice is fine)
 POST {{url}}/events/{{event_id}}/likes
@@ -69,7 +69,7 @@ Content-Type: application/json
 }
 
 ### Remove a like
-DELETE {{url}}/events/{{event_id}}/likes/test_user
+DELETE {{url}}/events/{{event_id}}/likes/test_user/password123
 
 ### Verify Login (Correct Login)
 GET {{url}}/login/test_user/password123
