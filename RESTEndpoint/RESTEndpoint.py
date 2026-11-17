@@ -256,7 +256,7 @@ def remove_like(event_id: uuid.UUID, username: str, db: DB):
 
 # ---------- login ----------
 
-@app.get("/login/{username}/{password}")
+@app.get("/login/{username}/{password}", response_model=UserOut)
 def get_login(username: str, password: str, db: DB):
     user = crud.get_user(db, username)
     if user is None:
