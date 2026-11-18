@@ -99,58 +99,66 @@
         <div class="settings-content">
 
             <!-- Account management -->
-            <section class="settings-panel active" id="account">
+            
+        <!-- Account management -->
+        <section class="settings-panel active" id="account">
 
-                <h2>Account management</h2>
+            <h2>Account management</h2>
 
-                <div class="settings-card">
-                    <h3>Profile</h3>
+            <div class="settings-card">
+                <h3>Profile</h3>
 
-                    <!-- Currently, for no ACC -->
-                    <a href="signup.html" class="settings-action" >
-                        <span>Sign up</span>
-                    </a>
+                <!-- Shown when logged out -->
+                <a href="signup.html" class="settings-action" id="settings-signup">
+                    Sign up
+                </a>
 
-                    <!-- #################### ADD WITH ACCOUNTS #####################
+                <!-- Shown when logged in -->
+                <div id="settings-profile" hidden>
                     <div class="settings-row">
                         <div>
                             <p class="settings-label">Name</p>
-                            <p class="settings-value">... </p>
+                            <p class="settings-value" id="profile-name"></p>
                         </div>
-                        <a href="#account" class="settings-action">Edit</a>
                     </div>
+
                     <div class="settings-row">
                         <div>
                             <p class="settings-label">Email</p>
-                            <p class="settings-value">... </p>
+                            <p class="settings-value" id="profile-email"></p>
                         </div>
-                        <a href="#account" class="settings-action">Edit</a>
                     </div>
-                </div>
-                <div class="settings-card">
-                    <h3>Security</h3>
+
                     <div class="settings-row">
                         <div>
-                            <p class="settings-label">Password</p>
-                            <p class="settings-value">... </p>
+                            <p class="settings-label">Username</p>
+                            <p class="settings-value" id="profile-username"></p>
                         </div>
-                        <a href="#account" class="settings-action">Change</a>
                     </div>
                 </div>
+            </div>
 
-                <div class="settings-card">
-                    <h3>Delete account</h3>
-                    <div class="settings-row">
-                        <div>
-                            <p class="settings-value">... </p>
-                        </div>
-                        <a href="#account" class="settings-action danger">Delete</a>
+            <!-- Log out -->
+            <div class="settings-card" id="logout-card" hidden>
+                <h3>Account</h3>
+
+                <div class="settings-row">
+                    <div>
+                        <p class="settings-label">Log out</p>
+                        <p class="settings-value">
+                            Sign out of your Buzz Bitez account.
+                        </p>
                     </div>
-                #################### ADD WITH ACCOUNTS ##################### -->
 
+                    <button type="button"
+                            class="settings-action danger"
+                            id="logout-button">
+                        Log Out
+                    </button>
                 </div>
-            </section>
-             
+            </div>
+
+        </section>
 
             <!-- Alert settings -->
             <section class="settings-panel" id="alert-settings">
