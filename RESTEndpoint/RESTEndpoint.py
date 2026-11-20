@@ -1,7 +1,9 @@
 import uuid
 from typing import Annotated
+import os
 
-from fastapi import Depends, FastAPI, HTTPException, Response
+from starlette.middleware.sessions import SessionMiddleware
+from fastapi import Depends, FastAPI, HTTPException, Response, Request
 from pwdlib import PasswordHash
 from pydantic import AwareDatetime, BaseModel, EmailStr, Field, field_validator
 from sqlalchemy.orm import Session
