@@ -1,6 +1,6 @@
 // Switches settings sections without leaving settings.html
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const links = document.querySelectorAll(".settings-menu-link");
     const panels = document.querySelectorAll(".settings-panel");
 
@@ -28,17 +28,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Get the currently logged-in user
-    const savedUser =
-        localStorage.getItem("bb-user") ||
-        sessionStorage.getItem("bb-user");
-
-    let currentUser = null;
-
-    try {
-        currentUser = savedUser ? JSON.parse(savedUser) : null;
-    } catch (error) {
-        console.error("Could not load user:", error);
+    // Get the currently logged-in user from FastAPI
+    async function getCurrentUser() {
+        try {
+            const response = await fetch("http://localhost:8000/me", { credentials: "include" });
+            if (!response.ok) return null;
+            return await response.json();
+        } catch (error) {
+            console.error("Could not load user:", error);
+            return null;
+        }
     }
 
     // Account management
@@ -48,33 +47,42 @@ document.addEventListener("DOMContentLoaded", () => {
     const logoutCard = document.getElementById("logout-card");
     const logoutButton = document.getElementById("logout-button");
 
+    // Display account information from the backend session
+    const currentUser = await getCurrentUser();
+
     if (currentUser && currentUser.username) {
-        // Hide signup prompts
         if (accountBar) accountBar.hidden = true;
         if (signupLink) signupLink.hidden = true;
-
-        // Show account information
         if (profileSection) profileSection.hidden = false;
         if (logoutCard) logoutCard.hidden = false;
 
-        document.getElementById("profile-name").textContent =
-            currentUser.full_name || currentUser.username;
-
-        document.getElementById("profile-email").textContent =
-            currentUser.email || "";
-
-        document.getElementById("profile-username").textContent =
-            currentUser.username;
+        document.getElementById("profile-name").textContent = currentUser.full_name || currentUser.username;
+        document.getElementById("profile-email").textContent = currentUser.email || "";
+        document.getElementById("profile-username").textContent = currentUser.username;
+    } else {
+        if (accountBar) accountBar.hidden = false;
+        if (signupLink) signupLink.hidden = false;
+        if (profileSection) profileSection.hidden = true;
+        if (logoutCard) logoutCard.hidden = true;
     }
 
     // Log out
     if (logoutButton) {
-        logoutButton.addEventListener("click", () => {
-            localStorage.removeItem("bb-user");
-            sessionStorage.removeItem("bb-user");
-            localStorage.removeItem("bbLoggedIn");
+        logoutButton.addEventListener("click", async () => {
+            try {
+                const response = await fetch("http://localhost:8000/logout", { method: "POST", credentials: "include" });
+                if (!response.ok) throw new Error("Logout failed");
 
-            window.location.href = "signup.html";
+                localStorage.removeItem("bb-user");
+                sessionStorage.removeItem("bb-user");
+                localStorage.removeItem("bbLoggedIn");
+                sessionStorage.removeItem("bbLoggedIn");
+
+                window.location.href = "signup.html#login";
+            } catch (error) {
+                console.error("Logout error:", error);
+                alert("Could not log out. Please try again.");
+            }
         });
     }
 

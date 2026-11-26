@@ -15,6 +15,15 @@ from db import get_db
 app = FastAPI()
 
 app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.environ["SESSION_SECRET_KEY"],
+    session_cookie="buzzbitez_session",
+    max_age=60 * 60 * 24 * 7,
+    same_site="lax",
+    https_only=False,  # Local development only
+)
+
+app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5500",
@@ -283,14 +292,67 @@ def remove_like(event_id: uuid.UUID, username: str, db: DB):
     crud.remove_like(db, event_id, username)
     return Response(status_code=204)
 
-# ---------- login ----------
 
-@app.get("/login/{username}/{password}", response_model=UserOut)
-def get_login(username: str, password: str, db: DB):
-    user = crud.get_user(db, username)
+# ---------- login / sessions ----------
+
+class LoginIn(BaseModel):
+    username: str
+    password: str
+
+
+@app.post("/login", response_model=UserOut)
+def login(credentials: LoginIn, request: Request, db: DB):
+    user = crud.get_user(db, credentials.username)
+
     if user is None:
-        raise HTTPException(404, f"No user with username {username} found.")
-    stored_hash = crud.get_password_hash(db, username)
-    if not password_hash.verify(password, stored_hash):
-        raise HTTPException(401, "Invalid password.")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password."
+        )
+
+    stored_hash = crud.get_password_hash(
+        db, credentials.username
+    )
+
+    if not password_hash.verify(
+        credentials.password, stored_hash
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password."
+        )
+
+    request.session.clear()
+    request.session["username"] = credentials.username
+
     return user
+
+
+@app.get("/me", response_model=UserOut)
+def get_current_user(request: Request, db: DB):
+    username = request.session.get("username")
+
+    if not username:
+        raise HTTPException(
+            status_code=401,
+            detail="Not logged in."
+        )
+
+    user = crud.get_user(db, username)
+
+    if user is None:
+        request.session.clear()
+        raise HTTPException(
+            status_code=401,
+            detail="Session expired or invalid."
+        )
+
+    return user
+
+
+@app.post("/logout", status_code=204)
+def logout(request: Request):
+    request.session.clear()
+    return Response(status_code=204)
+
+
