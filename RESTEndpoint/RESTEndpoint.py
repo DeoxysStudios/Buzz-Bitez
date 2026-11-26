@@ -65,20 +65,28 @@ class UserOut(BaseModel):
     banned_until: str | None = None
 
 
+class UserPublic(BaseModel):
+    # What anyone can see about any user. Email and full name stay private.
+    username: str
+
 TimeWindow = tuple[AwareDatetime, AwareDatetime]  # [start, end], timezone required
+
+
+# Optional photo as a base64 data URL.
+IMAGE_PATTERN = r"^(data:image/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+)?$"
 
 
 class EventUpdate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     location: str = Field(min_length=1, max_length=200)
-    times: list[TimeWindow] = Field(min_length=1)
-    description: str | None = None
-    tags: list[str] = []
-    image: str | None = None
+    times: list[TimeWindow] = Field(min_length=1, max_length=10)
+    description: str | None = Field(default=None, max_length=2000)
+    tags: list[str] = Field(default=[], max_length=20)
+    image: str | None = Field(default=None, max_length=7_000_000, pattern=IMAGE_PATTERN)
     enable_message_board: bool = False
     allow_direct_messages: bool = False
-    food_type: str | None = None
-    servings: int = 0
+    food_type: str | None = Field(default=None, max_length=50)
+    servings: int = Field(default=0, ge=0, le=10000)
 
     model_config = {"json_schema_extra": {"examples": [{
         "name": "APO pizza night (moved)",
@@ -170,12 +178,12 @@ class LikeIn(BaseModel):
 
 # ---------- users ----------
 
-@app.get("/users", response_model=list[UserOut])
+@app.get("/users", response_model=list[UserPublic])
 def list_users(db: DB):
     return crud.list_users(db)
 
 
-@app.get("/users/{username}", response_model=UserOut, responses=NOT_FOUND)
+@app.get("/users/{username}", response_model=UserPublic, responses=NOT_FOUND)
 def get_user(username: str, db: DB):
     user = crud.get_user(db, username)
     if user is None:
@@ -193,8 +201,11 @@ def create_user(user: UserIn, db: DB):
         raise HTTPException(409, f"Email {user.email} is already registered.")
 
 
-@app.delete("/users/{username}", status_code=204, responses=NOT_FOUND | CONFLICT)
-def delete_user(username: str, db: DB):
+@app.delete("/users/{username}/{password}", status_code=204, responses=NOT_FOUND | CONFLICT)
+def delete_user(username: str, password: str, db: DB):
+    stored_hash = crud.get_password_hash(db, username)
+    if not password_hash.verify(password, stored_hash):
+        raise HTTPException(401, "Invalid password.")
     try:
         deleted = crud.delete_user(db, username)
     except crud.UserHasEvents:
@@ -238,8 +249,15 @@ def update_event(event_id: uuid.UUID, event: EventUpdate, db: DB):
     return updated
 
 
-@app.delete("/events/{event_id}", status_code=204, responses=NOT_FOUND)
-def delete_event(event_id: uuid.UUID, db: DB):
+@app.delete("/events/{event_id}/{password}", status_code=204, responses=NOT_FOUND)
+def delete_event(event_id: uuid.UUID, password: str, db: DB):
+    event = crud.get_event(db, event_id)
+    if event is None:
+        raise HTTPException(404, f"No event with event_id {event_id} found.")
+    reporter = event["reporter"]
+    stored_hash = crud.get_password_hash(db, reporter)
+    if not password_hash.verify(password, stored_hash):
+        raise HTTPException(401, "Invalid password.")
     if not crud.delete_event(db, event_id):
         raise HTTPException(404, f"No event with event_id {event_id} found.")
     return Response(status_code=204)
@@ -267,7 +285,7 @@ def remove_like(event_id: uuid.UUID, username: str, db: DB):
 
 # ---------- login ----------
 
-@app.get("/login/{username}/{password}")
+@app.get("/login/{username}/{password}", response_model=UserOut)
 def get_login(username: str, password: str, db: DB):
     user = crud.get_user(db, username)
     if user is None:
