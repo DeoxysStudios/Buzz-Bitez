@@ -1,5 +1,5 @@
 // Switches settings sections without leaving settings.html
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async function() {
     const links = document.querySelectorAll(".settings-menu-link");
     const panels = document.querySelectorAll(".settings-panel");
 
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const allergenSaveStatus = document.getElementById("allergen-save-status");
 
     if (userAllergenOptions) {
-        const savedAllergens = loadUserAllergens();
+        const savedAllergens = await loadUserAllergens();
 
         userAllergenOptions.innerHTML = ALLERGENS.map(allergen => `
             <label class="allergen-chip">
@@ -69,12 +69,12 @@ document.addEventListener("DOMContentLoaded", () => {
             </label>
         `).join("");
 
-        userAllergenOptions.addEventListener("change", () => {
+        userAllergenOptions.addEventListener("change", async () => {
             const selected = Array.from(
                 userAllergenOptions.querySelectorAll("input:checked")
             ).map(input => input.value);
 
-            saveUserAllergens(selected);
+            await saveUserAllergens(selected);
 
             if (allergenSaveStatus) {
                 allergenSaveStatus.textContent = "Saved.";
