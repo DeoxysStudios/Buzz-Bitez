@@ -28,10 +28,14 @@ class UserHasEvents(Exception):
     pass
 
 
-_WITH_CHILDREN = (
+_WITH_EVENT_CHILDREN = (
     selectinload(Event.times),
     selectinload(Event.tags),
     selectinload(Event.likes),
+)
+
+_WITH_USER_CHILDREN = (
+    selectinload(User.allergens),
 )
 
 
@@ -92,13 +96,28 @@ def create_user(db: Session, username: str, email: str, full_name: str, password
 
 
 def list_users(db: Session) -> list[dict]:
-    return [_user_to_dict(u) for u in db.scalars(select(User).order_by(User.username))]
+    return [_user_to_dict(u) for u in db.scalars(select(User).options(*_WITH_USER_CHILDREN).order_by(User.username))]
 
 
 def get_user(db: Session, username: str) -> dict | None:
     # Return the user's public fields, or None if not found
-    user = db.get(User, username)
+    user = db.get(User, username, options=_WITH_USER_CHILDREN)
     return _user_to_dict(user) if user else None
+
+def update_user(db: Session, username: str, data: dict) -> dict | None:
+    # Replace the event's fields, times, and tags with what's in data. Return the updated dict, or None if not found
+    user = db.get(User, username, options=_WITH_USER_CHILDREN)
+    if user is None:
+        return None
+    
+    # TODO: Require password to update users
+
+    user.allergens = [UserAllergen(allergen = a) for a in dict.fromkeys(data.get("allergens", []))]
+    user.full_name = data["full_name"]
+    user.email = data["email"]
+
+    db.commit()
+    return _user_to_dict(user)
 
 
 def get_password_hash(db: Session, username: str) -> str | None:
@@ -127,12 +146,12 @@ def delete_user(db: Session, username: str) -> bool:
 # events
 
 def list_events(db: Session) -> list[dict]:
-    stmt = select(Event).options(*_WITH_CHILDREN).order_by(Event.created_at.desc())
+    stmt = select(Event).options(*_WITH_EVENT_CHILDREN).order_by(Event.created_at.desc())
     return [_event_to_dict(e) for e in db.scalars(stmt)]
 
 
 def get_event(db: Session, event_id: uuid.UUID) -> dict | None:
-    event = db.get(Event, event_id, options=_WITH_CHILDREN)
+    event = db.get(Event, event_id, options=_WITH_EVENT_CHILDREN)
     return _event_to_dict(event) if event else None
 
 
@@ -166,7 +185,7 @@ def create_event(db: Session, data: dict, reporter: str) -> dict:
 
 def update_event(db: Session, event_id: uuid.UUID, data: dict) -> dict | None:
     # Replace the event's fields, times, and tags with what's in data. Return the updated dict, or None if not found
-    event = db.get(Event, event_id, options=_WITH_CHILDREN)
+    event = db.get(Event, event_id, options=_WITH_EVENT_CHILDREN)
     if event is None:
         return None
 

@@ -51,6 +51,14 @@ class UserOut(BaseModel):
     banned_until: str | None = None
     allergens: list[str]
 
+class UserUpdate(BaseModel):
+    email: EmailStr
+    full_name: str = Field(min_length=1, max_length=100)
+    allergens: list[str]
+
+    model_config = {"json_schema_extra": {"examples": [
+                {"email": "test_user@rpi.edu", "full_name": "Test User", "allergens": ["Eggs", "Soy"]}
+    ]}}
 
 TimeWindow = tuple[AwareDatetime, AwareDatetime]  # [start, end], timezone required
 
@@ -179,6 +187,12 @@ def create_user(user: UserIn, db: DB):
     except crud.EmailTaken:
         raise HTTPException(409, f"Email {user.email} is already registered.")
 
+@app.put("/users/{username}", response_model=UserOut, responses=NOT_FOUND)
+def update_event(username: str, user: UserUpdate, db: DB):
+    updated = crud.update_user(db, username, user.model_dump(mode="json"))
+    if updated is None:
+        raise HTTPException(404, f"No user with username {username} found.")
+    return updated
 
 @app.delete("/users/{username}/{password}", status_code=204, responses=NOT_FOUND | CONFLICT)
 def delete_user(username: str, password: str, db: DB):

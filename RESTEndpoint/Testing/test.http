@@ -19,6 +19,16 @@ Content-Type: application/json
     "allergens": ["Egg", "Soy"]
 }
 
+### Update a user (Can only update full_name and allergens)
+PUT {{url}}/users/test_user
+Content-Type: application/json
+
+{
+    "email": "jonathan_doe@rpi.edu",
+    "full_name": "Jonathan Doe",
+    "allergens": ["Egg", "Dairy", "Gluten"]
+}
+
 ### Delete a user (409 if they still have reported events)
 DELETE {{url}}/users/test_user/password123
 
