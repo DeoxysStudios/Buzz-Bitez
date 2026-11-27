@@ -18,6 +18,10 @@ class User(Base):
     password_hash: Mapped[str]
     banned_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
+    allergens: Mapped[list["UserAllergen"]] = relationship(
+        cascade="all, delete-orphan", passive_deletes=True
+    )
+
 
 class Event(Base):
     __tablename__ = "events"
@@ -77,3 +81,12 @@ class Like(Base):
     username: Mapped[str] = mapped_column(
         ForeignKey("users.username", ondelete="CASCADE"), primary_key=True
     )
+
+class UserAllergen(Base):
+    __tablename__ = "allergens"
+    
+    username: Mapped[str] = mapped_column(
+        ForeignKey("users.username", ondelete="CASCADE"), primary_key=True
+    )
+    
+    allergen: Mapped[str] = mapped_column(String(50), primary_key=True)

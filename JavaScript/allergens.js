@@ -16,10 +16,6 @@ function allergenToTag(id) {
     return ALLERGEN_TAG_PREFIX + id;
 }
 
-function allergenToTag(id) {
-    return ALLERGEN_TAG_PREFIX + id;
-}
-
 function getEventAllergens(event) {
     const knownIds = ALLERGENS.map(a => a.id);
     return (event.tags || [])

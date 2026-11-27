@@ -15,7 +15,8 @@ Content-Type: application/json
     "username": "test_user",
     "email": "john_doe@rpi.edu",
     "full_name": "John Doe",
-    "password": "password123"
+    "password": "password123",
+    "allergens": ["Egg", "Soy"]
 }
 
 ### Delete a user (409 if they still have reported events)
