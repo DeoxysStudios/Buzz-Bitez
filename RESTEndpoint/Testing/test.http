@@ -16,17 +16,17 @@ Content-Type: application/json
     "email": "john_doe@rpi.edu",
     "full_name": "John Doe",
     "password": "password123",
-    "allergens": ["Egg", "Soy"]
+    "allergens": ["eggs", "soy"]
 }
 
-### Update a user (Can only update full_name and allergens)
+### Update a user (Can only update email, full_name, and allergens)
 PUT {{url}}/users/test_user
 Content-Type: application/json
 
 {
     "email": "jonathan_doe@rpi.edu",
     "full_name": "Jonathan Doe",
-    "allergens": ["Egg", "Dairy", "Gluten"]
+    "allergens": ["eggs", "dairy", "gluten"]
 }
 
 ### Delete a user (409 if they still have reported events)

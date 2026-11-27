@@ -52,9 +52,9 @@ class UserOut(BaseModel):
     allergens: list[str]
 
 class UserUpdate(BaseModel):
-    email: EmailStr
-    full_name: str = Field(min_length=1, max_length=100)
-    allergens: list[str]
+    email: EmailStr | None = None
+    full_name: str | None = None
+    allergens: list[str] | None = None
 
     model_config = {"json_schema_extra": {"examples": [
                 {"email": "test_user@rpi.edu", "full_name": "Test User", "allergens": ["Eggs", "Soy"]}

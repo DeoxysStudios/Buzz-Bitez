@@ -111,10 +111,13 @@ def update_user(db: Session, username: str, data: dict) -> dict | None:
         return None
     
     # TODO: Require password to update users
-
-    user.allergens = [UserAllergen(allergen = a) for a in dict.fromkeys(data.get("allergens", []))]
-    user.full_name = data["full_name"]
-    user.email = data["email"]
+    
+    if "allergens" in data and data["allergens"] != None:
+        user.allergens = [UserAllergen(allergen = a) for a in dict.fromkeys(data["allergens"])]
+    if "full_name" in data and data["full_name"] != None:
+        user.full_name = data["full_name"]
+    if "email" in data and data["email"] != None:
+        user.email = data["email"]
 
     db.commit()
     return _user_to_dict(user)
