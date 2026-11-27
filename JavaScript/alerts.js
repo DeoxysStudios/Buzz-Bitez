@@ -178,10 +178,13 @@ async function renderAlerts() {
     await renderAlerts();
 
     updateHiddenNote(allEvents.length - safeForUser.length);
+    displayEvents(visibleEvents, alertsList);
 
-    if (visibleEvents.length === 0 && allEvents.length > 0) {
+    if (visibleEvents.length === 0) {
         alertsList.innerHTML =
-            `<p class="alerts-empty">No alerts match your allergen filters right now.</p>`;
+            `<p class="alerts-empty">
+                No food alerts match your filters right now.
+            </p>`;
     }
 }
 
@@ -252,9 +255,18 @@ async function loadEvents() {
             throw new Error("Failed to load events");
         }
 
-        const events = await response.json();
+        // Get events from the backend
+        allEvents = await response.json();
 
-        displayEvents(events, alertsList);
+        // Display events on the Alerts page
+        if (alertsList) {
+            renderAlerts();
+        }
+
+        // Display events on the Discover page
+        if (discoverAlertsList) {
+            displayEvents(allEvents, discoverAlertsList);
+        }
 
     } catch (error) {
         console.error("Error loading events:", error);
@@ -325,7 +337,7 @@ function displayEvents(events, container) {
                 </div>
 
                 <div class="alert-card-footer">
-                    <span>💬 ${event.messageBoard ? "Messages enabled" : "No messages"}</span>
+                    <span>💬 ${event.enable_message_board ? "Messages enabled" : "No messages"}</span>
 
                     <a href="#">
                         View details →

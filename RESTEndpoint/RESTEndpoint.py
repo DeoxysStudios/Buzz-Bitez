@@ -1,15 +1,39 @@
 import uuid
 from typing import Annotated
+import os
 
-from fastapi import Depends, FastAPI, HTTPException, Response
+from starlette.middleware.sessions import SessionMiddleware
+from fastapi import Depends, FastAPI, HTTPException, Response, Request
 from pwdlib import PasswordHash
 from pydantic import AwareDatetime, BaseModel, EmailStr, Field, field_validator
 from sqlalchemy.orm import Session
+from fastapi.middleware.cors import CORSMiddleware
 
 import crud
 from db import get_db
 
 app = FastAPI()
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=os.environ["SESSION_SECRET_KEY"],
+    session_cookie="buzzbitez_session",
+    max_age=60 * 60 * 24 * 7,
+    same_site="lax",
+    https_only=False,  # Local development only
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5500",
+        "http://127.0.0.1:5500",
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Content-Type"],
+)
+
 password_hash = PasswordHash.recommended()
 
 # Every endpoint that declares `db: DB` gets its own database session,
@@ -60,20 +84,28 @@ class UserUpdate(BaseModel):
                 {"email": "test_user@rpi.edu", "full_name": "Test User", "allergens": ["Eggs", "Soy"]}
     ]}}
 
+class UserPublic(BaseModel):
+    # What anyone can see about any user. Email and full name stay private.
+    username: str
+
 TimeWindow = tuple[AwareDatetime, AwareDatetime]  # [start, end], timezone required
+
+
+# Optional photo as a base64 data URL.
+IMAGE_PATTERN = r"^(data:image/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+)?$"
 
 
 class EventUpdate(BaseModel):
     name: str = Field(min_length=1, max_length=200)
     location: str = Field(min_length=1, max_length=200)
-    times: list[TimeWindow] = Field(min_length=1)
-    description: str | None = None
-    tags: list[str] = []
-    image: str | None = None
+    times: list[TimeWindow] = Field(min_length=1, max_length=10)
+    description: str | None = Field(default=None, max_length=2000)
+    tags: list[str] = Field(default=[], max_length=20)
+    image: str | None = Field(default=None, max_length=7_000_000, pattern=IMAGE_PATTERN)
     enable_message_board: bool = False
     allow_direct_messages: bool = False
-    food_type: str | None = None
-    servings: int = 0
+    food_type: str | None = Field(default=None, max_length=50)
+    servings: int = Field(default=0, ge=0, le=10000)
 
     model_config = {"json_schema_extra": {"examples": [{
         "name": "APO pizza night (moved)",
@@ -165,12 +197,12 @@ class LikeIn(BaseModel):
 
 # ---------- users ----------
 
-@app.get("/users", response_model=list[UserOut])
+@app.get("/users", response_model=list[UserPublic])
 def list_users(db: DB):
     return crud.list_users(db)
 
 
-@app.get("/users/{username}", response_model=UserOut, responses=NOT_FOUND)
+@app.get("/users/{username}", response_model=UserPublic, responses=NOT_FOUND)
 def get_user(username: str, db: DB):
     user = crud.get_user(db, username)
     if user is None:
@@ -276,14 +308,67 @@ def remove_like(event_id: uuid.UUID, username: str, db: DB):
     crud.remove_like(db, event_id, username)
     return Response(status_code=204)
 
-# ---------- login ----------
 
-@app.get("/login/{username}/{password}")
-def get_login(username: str, password: str, db: DB):
-    user = crud.get_user(db, username)
+# ---------- login / sessions ----------
+
+class LoginIn(BaseModel):
+    username: str
+    password: str
+
+
+@app.post("/login", response_model=UserOut)
+def login(credentials: LoginIn, request: Request, db: DB):
+    user = crud.get_user(db, credentials.username)
+
     if user is None:
-        raise HTTPException(404, f"No user with username {username} found.")
-    stored_hash = crud.get_password_hash(db, username)
-    if not password_hash.verify(password, stored_hash):
-        raise HTTPException(401, "Invalid password.")
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password."
+        )
+
+    stored_hash = crud.get_password_hash(
+        db, credentials.username
+    )
+
+    if not password_hash.verify(
+        credentials.password, stored_hash
+    ):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid username or password."
+        )
+
+    request.session.clear()
+    request.session["username"] = credentials.username
+
     return user
+
+
+@app.get("/me", response_model=UserOut)
+def get_current_user(request: Request, db: DB):
+    username = request.session.get("username")
+
+    if not username:
+        raise HTTPException(
+            status_code=401,
+            detail="Not logged in."
+        )
+
+    user = crud.get_user(db, username)
+
+    if user is None:
+        request.session.clear()
+        raise HTTPException(
+            status_code=401,
+            detail="Session expired or invalid."
+        )
+
+    return user
+
+
+@app.post("/logout", status_code=204)
+def logout(request: Request):
+    request.session.clear()
+    return Response(status_code=204)
+
+
