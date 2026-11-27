@@ -60,9 +60,10 @@ class UserIn(BaseModel):
     email: EmailStr
     full_name: str = Field(min_length=1, max_length=100)
     password: str = Field(min_length=8)
+    allergens: list[str]
 
     model_config = {"json_schema_extra": {"examples": [
-                {"username": "test_user", "email": "test_user@rpi.edu", "full_name": "Test User", "password": "password123"}
+                {"username": "test_user", "email": "test_user@rpi.edu", "full_name": "Test User", "password": "password123", "allergens": ["Eggs", "Soy"]}
     ]}}
 
 
@@ -72,7 +73,16 @@ class UserOut(BaseModel):
     email: str
     full_name: str
     banned_until: str | None = None
+    allergens: list[str]
 
+class UserUpdate(BaseModel):
+    email: EmailStr | None = None
+    full_name: str | None = None
+    allergens: list[str] | None = None
+
+    model_config = {"json_schema_extra": {"examples": [
+                {"email": "test_user@rpi.edu", "full_name": "Test User", "allergens": ["Eggs", "Soy"]}
+    ]}}
 
 class UserPublic(BaseModel):
     # What anyone can see about any user. Email and full name stay private.
@@ -203,12 +213,18 @@ def get_user(username: str, db: DB):
 @app.post("/users", response_model=UserOut, status_code=201, responses=CONFLICT)
 def create_user(user: UserIn, db: DB):
     try:
-        return crud.create_user(db, user.username, user.email, user.full_name, password_hash.hash(user.password))
+        return crud.create_user(db, user.username, user.email, user.full_name, password_hash.hash(user.password), user.allergens)
     except crud.UsernameTaken:
         raise HTTPException(409, f"Username {user.username} already exists.")
     except crud.EmailTaken:
         raise HTTPException(409, f"Email {user.email} is already registered.")
 
+@app.put("/users/{username}", response_model=UserOut, responses=NOT_FOUND)
+def update_event(username: str, user: UserUpdate, db: DB):
+    updated = crud.update_user(db, username, user.model_dump(mode="json"))
+    if updated is None:
+        raise HTTPException(404, f"No user with username {username} found.")
+    return updated
 
 @app.delete("/users/{username}/{password}", status_code=204, responses=NOT_FOUND | CONFLICT)
 def delete_user(username: str, password: str, db: DB):

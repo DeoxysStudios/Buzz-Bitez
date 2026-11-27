@@ -161,14 +161,21 @@ function updateHiddenNote(hiddenCount) {
     allergenHiddenNote.hidden = false;
 }
 
-function renderAlerts() {
+async function renderAlerts() {
     if (!alertsList) return;
 
-    // Filter events based on user allergens and page-specific hidden allergens
-    const userAllergens = loadUserAllergens();
+    const userAllergens = await loadUserAllergens();
     const pageAllergens = Array.from(pageHiddenAllergens);
-    const safeForUser = allEvents.filter(event => !eventHasAnyAllergen(event, userAllergens));
-    const visibleEvents = safeForUser.filter(event => !eventHasAnyAllergen(event, pageAllergens));
+
+    const safeForUser = allEvents.filter(
+        event => !eventHasAnyAllergen(event, userAllergens)
+    );
+    const visibleEvents = safeForUser.filter(
+        event => !eventHasAnyAllergen(event, pageAllergens)
+    );
+
+    allEvents = events;
+    await renderAlerts();
 
     updateHiddenNote(allEvents.length - safeForUser.length);
     displayEvents(visibleEvents, alertsList);
@@ -181,10 +188,10 @@ function renderAlerts() {
     }
 }
 
-function renderAllergenFilter() {
+async function renderAllergenFilter() {
     if (!allergenFilterContainer) return;
 
-    const userAllergens = loadUserAllergens();
+    const userAllergens = await loadUserAllergens();
 
     allergenFilterContainer.innerHTML = ALLERGENS.map(allergen => {
         const fromSettings = userAllergens.includes(allergen.id);
@@ -207,13 +214,13 @@ function renderAllergenFilter() {
     }).join("");
 }
 
-function refreshAllergenViews() {
-    renderAllergenFilter();
-    renderAlerts();
+async function refreshAllergenViews() {
+    await renderAllergenFilter();
+    await renderAlerts();
 }
 
 if (allergenFilterContainer) {
-    allergenFilterContainer.addEventListener("change", event => {
+    allergenFilterContainer.addEventListener("change", async event => {
         const input = event.target;
 
         if (input.checked) {
@@ -222,22 +229,22 @@ if (allergenFilterContainer) {
             pageHiddenAllergens.delete(input.value);
         }
 
-        renderAlerts();
+        await renderAlerts();
     });
 
-    window.addEventListener("storage", event => {
+    window.addEventListener("storage", async event => {
         if (event.key === ALLERGEN_STORAGE_KEY) {
-            refreshAllergenViews();
+            await refreshAllergenViews();
         }
     });
 
-    window.addEventListener("pageshow", event => {
+    window.addEventListener("pageshow", async event => {
         if (event.persisted) {
-            refreshAllergenViews();
+            await refreshAllergenViews();
         }
     });
 
-    renderAllergenFilter();
+    await renderAllergenFilter();
 }
 
 async function loadEvents() {

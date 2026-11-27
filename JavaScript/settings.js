@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const allergenSaveStatus = document.getElementById("allergen-save-status");
 
     if (userAllergenOptions) {
-        const savedAllergens = loadUserAllergens();
+        const savedAllergens = await loadUserAllergens();
 
         userAllergenOptions.innerHTML = ALLERGENS.map(allergen => `
             <label class="allergen-chip">
@@ -133,12 +133,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             </label>
         `).join("");
 
-        userAllergenOptions.addEventListener("change", () => {
+        userAllergenOptions.addEventListener("change", async () => {
             const selected = Array.from(
                 userAllergenOptions.querySelectorAll("input:checked")
             ).map(input => input.value);
 
-            saveUserAllergens(selected);
+            await saveUserAllergens(selected);
 
             if (allergenSaveStatus) {
                 allergenSaveStatus.textContent = "Saved.";

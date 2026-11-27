@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
-from models import Event, EventTag, EventTime, Like, User
+from models import Event, EventTag, EventTime, Like, User, UserAllergen
 
 
 class UsernameTaken(Exception):
@@ -28,10 +28,14 @@ class UserHasEvents(Exception):
     pass
 
 
-_WITH_CHILDREN = (
+_WITH_EVENT_CHILDREN = (
     selectinload(Event.times),
     selectinload(Event.tags),
     selectinload(Event.likes),
+)
+
+_WITH_USER_CHILDREN = (
+    selectinload(User.allergens),
 )
 
 
@@ -60,6 +64,7 @@ def _user_to_dict(user: User) -> dict:
         "email": user.email,
         "full_name": user.full_name,
         "banned_until": user.banned_until.isoformat() if user.banned_until else None,
+        "allergens": [a.allergen for a in user.allergens]
     }
 
 
@@ -69,8 +74,14 @@ def _constraint(e: IntegrityError) -> str | None:
 
 # users
 
-def create_user(db: Session, username: str, email: str, full_name: str, password_hash: str) -> dict:
-    user = User(username=username, email=email, full_name=full_name, password_hash=password_hash)
+def create_user(db: Session, username: str, email: str, full_name: str, password_hash: str, allergens: list[str]) -> dict:
+    user = User(
+        username = username,
+        email = email,
+        full_name = full_name,
+        password_hash = password_hash,
+        allergens = [UserAllergen(allergen = a) for a in allergens]
+    )
     db.add(user)
     try:
         db.commit()
@@ -85,13 +96,31 @@ def create_user(db: Session, username: str, email: str, full_name: str, password
 
 
 def list_users(db: Session) -> list[dict]:
-    return [_user_to_dict(u) for u in db.scalars(select(User).order_by(User.username))]
+    return [_user_to_dict(u) for u in db.scalars(select(User).options(*_WITH_USER_CHILDREN).order_by(User.username))]
 
 
 def get_user(db: Session, username: str) -> dict | None:
     # Return the user's public fields, or None if not found
-    user = db.get(User, username)
+    user = db.get(User, username, options=_WITH_USER_CHILDREN)
     return _user_to_dict(user) if user else None
+
+def update_user(db: Session, username: str, data: dict) -> dict | None:
+    # Replace the event's fields, times, and tags with what's in data. Return the updated dict, or None if not found
+    user = db.get(User, username, options=_WITH_USER_CHILDREN)
+    if user is None:
+        return None
+    
+    # TODO: Require password to update users
+    
+    if "allergens" in data and data["allergens"] != None:
+        user.allergens = [UserAllergen(allergen = a) for a in dict.fromkeys(data["allergens"])]
+    if "full_name" in data and data["full_name"] != None:
+        user.full_name = data["full_name"]
+    if "email" in data and data["email"] != None:
+        user.email = data["email"]
+
+    db.commit()
+    return _user_to_dict(user)
 
 
 def get_password_hash(db: Session, username: str) -> str | None:
@@ -120,12 +149,12 @@ def delete_user(db: Session, username: str) -> bool:
 # events
 
 def list_events(db: Session) -> list[dict]:
-    stmt = select(Event).options(*_WITH_CHILDREN).order_by(Event.created_at.desc())
+    stmt = select(Event).options(*_WITH_EVENT_CHILDREN).order_by(Event.created_at.desc())
     return [_event_to_dict(e) for e in db.scalars(stmt)]
 
 
 def get_event(db: Session, event_id: uuid.UUID) -> dict | None:
-    event = db.get(Event, event_id, options=_WITH_CHILDREN)
+    event = db.get(Event, event_id, options=_WITH_EVENT_CHILDREN)
     return _event_to_dict(event) if event else None
 
 
@@ -159,7 +188,7 @@ def create_event(db: Session, data: dict, reporter: str) -> dict:
 
 def update_event(db: Session, event_id: uuid.UUID, data: dict) -> dict | None:
     # Replace the event's fields, times, and tags with what's in data. Return the updated dict, or None if not found
-    event = db.get(Event, event_id, options=_WITH_CHILDREN)
+    event = db.get(Event, event_id, options=_WITH_EVENT_CHILDREN)
     if event is None:
         return None
 
