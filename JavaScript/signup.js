@@ -3,7 +3,7 @@
   // ---------- Config ----------
   const REQUIRE_EDU = true;          // set false to accept any email address
   const REDIRECT_AFTER = "home.html";
-  const SERVER_BASE_URL = "http://127.0.0.1:8000"; // TODO: Replace this url when we have an actual server
+  const SERVER_BASE_URL = "http://localhost:8000"; // TODO: Replace this url when we have an actual server
   const SERVER_USERS_URL = SERVER_BASE_URL + "/users";
   const SERVER_LOGIN_URL = SERVER_BASE_URL + "/login";
 
@@ -121,7 +121,7 @@
     </div>`;
 
   function renderWelcome(root, user) {
-    const first = esc(user.name.split(" ")[0]);
+    const first = esc((user.full_name || user.username).split(" ")[0]);
     root.innerHTML = `
       <div class="su-wrap">
         <section class="su-card">
@@ -191,86 +191,111 @@
       return null;
     }
 
-    let validLoginInfo = true;
-    let typedUsername = values["username"];
-    let typedPassword = values["password"];
-
     if (mode === "signup") {
       try {
-        const response = await fetch(`${SERVER_USERS_URL}/${typedUsername}`);
-        if (response.ok) {
-          const msg = "This username is already in use.";
-          form.querySelector("#e-username").textContent = msg;
-          form.querySelector("#f-username").setAttribute("aria-invalid", !!msg);
-          validLoginInfo = false;
-        }
-      } catch { }
-    } else {
-      try {
-        const response = await fetch(`${SERVER_LOGIN_URL}/${typedUsername}/${typedPassword}`);
-        if (!response.ok) {
-          throw new Error("Login request failed!");
-        }
-      } catch {
-        const msg = "Incorrect username or password.";
-        form.querySelector("#e-username").textContent = msg;
-        form.querySelector("#f-username").setAttribute("aria-invalid", !!msg);
-        form.querySelector("#e-password").textContent = msg;
-        form.querySelector("#f-password").setAttribute("aria-invalid", !!msg);
-        validLoginInfo = false;
+          const response = await fetch(`${SERVER_USERS_URL}/${encodeURIComponent(values.username)}`);
+          if (response.ok) {
+              const msg = "This username is already in use.";
+              form.querySelector("#e-username").textContent = msg;
+              form.querySelector("#f-username").setAttribute("aria-invalid", "true");
+              form.querySelector("#f-username").focus();
+              return null;
+          }
+      } catch (error) {
+          console.error("Username check failed:", error);
       }
-    }
-
-    if (validLoginInfo)
-      return values;
-
-    form.querySelector("#f-username").focus();
-    return null;
   }
+  
+  return values;
+}
 
   // ---------- Submit ----------
+  
   async function submit(values, form) {
-    let username = values.username
-    let password = values.password
-    var user;
-    if (mode === "signup") {
-      const data = {
-        username: username,
-        email: values.email,
-        password: password,
-        full_name: values.name
-      };
-      const response = await fetch(SERVER_USERS_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
-      if (!response.ok)
-        throw new Error(`Error posting new user with username ${username}. Status ${response.status}`)
-      user = await response.json();
-    } else {
-      const response = await fetch(`${SERVER_LOGIN_URL}/${username}/${password}`);
-      if (!response.ok)
-        throw new Error(`Error fetching user with username ${username}. Status: ${response.status}`);
-      user = await response.json();
+    const username = values.username;
+    const password = values.password;
+    const button = form.querySelector(".su-submit");
+    const errorElement = form.querySelector("#e-form");
+
+    button.disabled = true;
+    errorElement.textContent = "";
+
+    try {
+        // Create an account first if signing up
+        if (mode === "signup") {
+            const signupResponse = await fetch(SERVER_USERS_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    email: values.email,
+                    full_name: values.name
+                })
+            });
+
+            if (!signupResponse.ok) {
+                throw new Error("Could not create account.");
+            }
+        }
+
+        // Log in and create the backend session
+        const response = await fetch(SERVER_LOGIN_URL, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Incorrect username or password.");
+        }
+
+        const user = await response.json();
+
+        // Temporary until other pages use GET /me
+        localStorage.setItem("bb-user", JSON.stringify(user));
+
+        button.textContent = "Logged in!";
+
+        if (embedded) {
+            render(document.getElementById("signup-root"));
+        } else {
+            window.location.href = REDIRECT_AFTER;
+        }
+
+    } catch (error) {
+        console.error("Authentication error:", error);
+        errorElement.textContent = error.message;
+        button.disabled = false;
     }
-    try { (remember ? localStorage : sessionStorage).setItem("bb-user", JSON.stringify(user)); } catch {}
-    form.querySelector(".su-submit").textContent = mode === "signup" ? "Account created" : "Logged in";
-    setTimeout(() => {
-      if (embedded) render(document.getElementById("signup-root"));   // swap form for welcome card
-      else window.location.href = REDIRECT_AFTER;
-    }, 600);
   }
+
 
   // ---------- Events ----------
   function bind(root) {
     root.addEventListener("click", (e) => {
       if (e.target.closest("[data-logout]")) {
-        try { localStorage.removeItem("bb-user"); sessionStorage.removeItem("bb-user"); } catch {}
-        mode = "login";
-        render(root);
+        (async () => {
+          try {
+            const response = await fetch(`${SERVER_BASE_URL}/logout`, { method: "POST", credentials: "include" });
+            if (!response.ok) throw new Error("Logout failed");
+            localStorage.removeItem("bb-user"); sessionStorage.removeItem("bb-user");
+            localStorage.removeItem("bbLoggedIn"); sessionStorage.removeItem("bbLoggedIn");
+            mode = "login";
+            render(root);
+          } catch (error) {
+            console.error("Logout error:", error);
+            alert("Could not log out. Please try again.");
+          }
+        })();
         return;
       }
       const modeBtn = e.target.closest("[data-mode]");
